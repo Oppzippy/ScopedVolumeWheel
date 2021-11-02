@@ -23,15 +23,16 @@ void VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 std::vector<IAudioSessionControl2*> VolumeMixer::getAudioSessionControlsForProcess(DWORD processId)
 {
     std::vector<IAudioSessionControl2*> sessions = this->getAudioSessionControls();
-    std::remove_if(sessions.begin(), sessions.end(), [processId](IAudioSessionControl2* session) {
+    auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processId](IAudioSessionControl2* session) {
         DWORD pId = 0;
         session->GetProcessId(&pId);
-        if (pId != processId || true) {
+        if (pId != processId) {
             session->Release();
             return true;
         }
         return false;
     });
+    sessions.erase(thingsToRemove, sessions.end());
     return sessions;
 }
 

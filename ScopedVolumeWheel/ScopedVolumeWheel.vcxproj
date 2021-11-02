@@ -140,12 +140,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HotKey.cpp" />
     <ClCompile Include="ScopedVolumeWheel.cpp" />
     <ClCompile Include="VolumeMixer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HotKey.h" />
     <ClInclude Include="VolumeMixer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
