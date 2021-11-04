@@ -3,7 +3,7 @@
 
 #define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS (0x00d)
 
-void VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
+float VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
     for (CComPtr<IAudioSessionControl2> session : sessions) {
@@ -23,6 +23,7 @@ void VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
         }
         result = volume->SetMasterVolume(level, NULL);
         throwWin32ExceptionIfNotOk("ISimpleAudioVolume::SetMasterVolume", result);
+        return level;
     }
 }
 
