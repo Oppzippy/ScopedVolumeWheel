@@ -6,10 +6,10 @@ class ApplicationProcessIdSelectionStrategy : public ProcessIdSelectionStrategy
 {
 public:
 	ApplicationProcessIdSelectionStrategy(std::wstring applicationName);
-	DWORD processId();
+	virtual DWORD processId() override;
 private:
 	std::wstring applicationName;
 	std::wstring getFileNameOfProcess(DWORD processId);
-	std::wstring getFileName(wchar_t* filePath);
+	std::wstring getFileName(const wchar_t* filePath);
 };
 

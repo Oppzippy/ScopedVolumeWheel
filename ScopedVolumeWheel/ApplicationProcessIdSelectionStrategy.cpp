@@ -53,7 +53,7 @@ std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD p
 	}
 }
 
-std::wstring ApplicationProcessIdSelectionStrategy::getFileName(wchar_t *filePath) {
+std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t *filePath) {
 	wchar_t fileName[MAX_PATH]{};
 	wchar_t fileExtension[MAX_PATH]{};
 	errno_t result =  _wsplitpath_s(filePath, NULL, 0, NULL, 0, fileName, MAX_PATH, fileExtension, MAX_PATH);
