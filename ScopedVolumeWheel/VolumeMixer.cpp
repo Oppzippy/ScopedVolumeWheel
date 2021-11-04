@@ -1,84 +1,97 @@
 #include "VolumeMixer.h"
-#include <iostream>
+#include "Win32Exception.h"
+
+#define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS (0x00d)
 
 void VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
-    std::vector<IAudioSessionControl2*> sessions = this->getAudioSessionControlsForProcess(processId);
-    for (IAudioSessionControl2* session : sessions) {
-        ISimpleAudioVolume* volume;
-        session->QueryInterface(&volume);
+    std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
+    for (CComPtr<IAudioSessionControl2> session : sessions) {
+        CComPtr<ISimpleAudioVolume> volume;
+        HRESULT result = session->QueryInterface(&volume);
+        throwWin32ExceptionIfNotOk("IAudioSessionControl2::QueryInterface", result);
+
         float level = 0;
-        volume->GetMasterVolume(&level);
+        result = volume->GetMasterVolume(&level);
+        throwWin32ExceptionIfNotOk("ISimpleAudioVolume::GetMasterVolume", result);
+
         level += adjustment;
         if (level > 1) {
             level = 1;
         } else if (level < 0) {
             level = 0;
         }
-        volume->SetMasterVolume(level, NULL);
-        session->Release();
+        result = volume->SetMasterVolume(level, NULL);
+        throwWin32ExceptionIfNotOk("ISimpleAudioVolume::SetMasterVolume", result);
     }
 }
 
-std::vector<IAudioSessionControl2*> VolumeMixer::getAudioSessionControlsForProcess(DWORD processId)
+std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControlsForProcess(DWORD processId)
 {
-    std::vector<IAudioSessionControl2*> sessions = this->getAudioSessionControls();
-    auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processId](IAudioSessionControl2* session) {
+    std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControls();
+    auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processId](CComPtr<IAudioSessionControl2> session) {
         DWORD pId = 0;
-        session->GetProcessId(&pId);
-        if (pId != processId) {
-            session->Release();
-            return true;
+        HRESULT result = session->GetProcessId(&pId);
+        if (result != AUDCLNT_S_NO_SINGLE_PROCESS) {
+            throwWin32ExceptionIfNotOk("IAudioSessionControl2::GetProcessId", result);
         }
-        return false;
+        return pId != processId;
     });
     sessions.erase(thingsToRemove, sessions.end());
     return sessions;
 }
 
-std::vector<IAudioSessionControl2 *> VolumeMixer::getAudioSessionControls()
+std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControls()
 {
-	std::vector<IAudioSessionControl2 *> sessions;
+	std::vector<CComPtr<IAudioSessionControl2>> sessions;
 
-    IMMDeviceCollection* devices = this->getDevices();
+    CComPtr<IMMDeviceCollection> devices = this->getDevices();
     UINT numDevices = 0;
-    devices->GetCount(&numDevices);
+    HRESULT result = devices->GetCount(&numDevices);
+    throwWin32ExceptionIfNotOk("IMMDeviceCollection::GetCount", result)
+
     for (UINT i = 0; i < numDevices; i++) {
-        IMMDevice* device = NULL;
-        devices->Item(i, &device);
+        CComPtr<IMMDevice> device;
+        result = devices->Item(i, &device);
+        throwWin32ExceptionIfNotOk("IMMDeviceCollection::Item", result);
 
-        IAudioSessionManager2* sessionManager = NULL;
-        device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&sessionManager);
+        CComPtr<IAudioSessionManager2> sessionManager;
+        result = device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&sessionManager);
+        throwWin32ExceptionIfNotOk("IMMDevice::Activate", result);
 
-        IAudioSessionEnumerator* enumerator = NULL;
-        sessionManager->GetSessionEnumerator(&enumerator);
+        CComPtr<IAudioSessionEnumerator> enumerator;
+        result = sessionManager->GetSessionEnumerator(&enumerator);
+        throwWin32ExceptionIfNotOk("IAudioSessionManager2::GetSessionEnumerator", result);
 
         int numSessions = 0;
-        enumerator->GetCount(&numSessions);
+        result = enumerator->GetCount(&numSessions);
+        throwWin32ExceptionIfNotOk("IAudioSessionEnumerator::GetCount", result);
+
         for (int i = 0; i < numSessions; i++) {
-            IAudioSessionControl* session = NULL;
-            enumerator->GetSession(i, &session);
-            IAudioSessionControl2* session2 = NULL;
+            CComPtr<IAudioSessionControl> session;
+            result = enumerator->GetSession(i, &session);
+            throwWin32ExceptionIfNotOk("IAudioSessionEnumerator::GetSession", result);
+
+            CComPtr<IAudioSessionControl2> session2;
             session->QueryInterface(&session2);
-            session->Release();
+            throwWin32ExceptionIfNotOk("IAudioSessionControl::QueryInterface", result);
 
             sessions.push_back(session2);
         }
-        device->Release();
     }
-    devices->Release();
 
     return sessions;
 }
 
-IMMDeviceCollection *VolumeMixer::getDevices()
+CComPtr<IMMDeviceCollection> VolumeMixer::getDevices()
 {
-    IMMDeviceEnumerator* deviceEnumerator = NULL;
-    CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
-
-    IMMDeviceCollection* devices = NULL;
-    deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
-    deviceEnumerator->Release();
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+    HRESULT result = deviceEnumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator));
+    throwWin32ExceptionIfNotOk("CComPtr::CoCreateInstance", result);
+    
+    CComPtr<IMMDeviceCollection> devices;
+    result = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
+    throwWin32ExceptionIfNotOk("IMMDeviceEnumerator::EnumAudioEndpoints", result);
 
     return devices;
 }

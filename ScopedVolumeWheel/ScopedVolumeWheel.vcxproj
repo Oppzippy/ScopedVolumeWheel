@@ -89,6 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,11 +141,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ScopedVolumeWheel.cpp" />
+    <ClCompile Include="ApplicationProcessIdSelectionStrategy.cpp" />
+    <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="VolumeMixer.cpp" />
+    <ClCompile Include="Win32Exception.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ApplicationProcessIdSelectionStrategy.h" />
+    <ClInclude Include="FocusedWindowProcessIdSelectionStrategy.h" />
+    <ClInclude Include="ProcessIdSelectionStrategy.h" />
     <ClInclude Include="VolumeMixer.h" />
+    <ClInclude Include="Win32Exception.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
