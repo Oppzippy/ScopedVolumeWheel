@@ -3,7 +3,7 @@
 VolumeAdjustmentHotKeyHandler::VolumeAdjustmentHotKeyHandler(
 	std::shared_ptr<VolumeMixer> volumeMixer,
 	std::shared_ptr<VolumeDisplay> volumeDisplay,
-	std::shared_ptr<ProcessIdSelectionStrategy> processIdSelectionStrategy,
+	std::shared_ptr<const ProcessIdSelectionStrategy> processIdSelectionStrategy,
 	float adjustment
 )
 {
@@ -16,8 +16,10 @@ VolumeAdjustmentHotKeyHandler::VolumeAdjustmentHotKeyHandler(
 void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
 {
 	DWORD processId = this->processIdSelectionStrategy->processId();
-	float newVolume = volumeMixer->adjustVolumeOfProcess(processId, this->adjustment);
-	if (this->volumeDisplay != nullptr) {
-		this->volumeDisplay->show(newVolume);
+	if (processId != 0) {
+		float newVolume = volumeMixer->adjustVolumeOfProcess(processId, this->adjustment);
+		if (this->volumeDisplay != nullptr) {
+			this->volumeDisplay->show(newVolume);
+		}
 	}
 }

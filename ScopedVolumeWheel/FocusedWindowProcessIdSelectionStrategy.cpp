@@ -1,6 +1,6 @@
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 
-DWORD FocusedWindowProcessIdSelectionStrategy::processId()
+DWORD FocusedWindowProcessIdSelectionStrategy::processId() const
 {
     HWND hwnd = GetForegroundWindow();
     DWORD processId = 0;

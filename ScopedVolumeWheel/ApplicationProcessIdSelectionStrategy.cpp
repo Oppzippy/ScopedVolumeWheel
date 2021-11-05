@@ -8,7 +8,7 @@ ApplicationProcessIdSelectionStrategy::ApplicationProcessIdSelectionStrategy(std
 	this->applicationName = applicationName;
 }
 
-DWORD ApplicationProcessIdSelectionStrategy::processId()
+DWORD ApplicationProcessIdSelectionStrategy::processId() const
 {
 	DWORD processIds[2048]{};
 	DWORD bytesNeeded = 0;
@@ -20,10 +20,15 @@ DWORD ApplicationProcessIdSelectionStrategy::processId()
 	for (DWORD i = 0; i < bytesNeeded / sizeof(DWORD); i++) {
 		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processIds[i]);
 		if (processHandle == NULL) {
-			throwWin32Exception("OpenProcess", 0);
+			DWORD err = GetLastError();
+			if (err == ERROR_INVALID_PARAMETER || err == ERROR_ACCESS_DENIED) {
+				continue;
+			}
+			throwWin32Exception("OpenProcess", err);
 		}
 		TCHAR filePath[MAX_PATH]{};
 		bool success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
+		DWORD error = GetLastError();
 		CloseHandle(processHandle);
 		if (success) {
 			std::wstring fileName = this->getFileName(filePath);
@@ -31,14 +36,14 @@ DWORD ApplicationProcessIdSelectionStrategy::processId()
 				return processIds[i];
 			}
 		} else {
-			throwWin32Exception("GetModuleFileNameEx", 0)
+			throwWin32Exception("GetModuleFileNameEx", GetLastError())
 		}
 	}
 
 	return 0;
 }
 
-std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId)
+std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
 {
 	HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
 	if (processHandle != NULL) {
@@ -53,7 +58,8 @@ std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD p
 	}
 }
 
-std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t *filePath) {
+std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t *filePath) const
+{
 	wchar_t fileName[MAX_PATH]{};
 	wchar_t fileExtension[MAX_PATH]{};
 	errno_t result =  _wsplitpath_s(filePath, NULL, 0, NULL, 0, fileName, MAX_PATH, fileExtension, MAX_PATH);
@@ -63,7 +69,6 @@ std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t *f
 	}
 
 	std::wstring fileNameAndExtension(fileName);
-	fileNameAndExtension += L".";
 	fileNameAndExtension += fileExtension;
 	return fileNameAndExtension;
 }

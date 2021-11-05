@@ -4,5 +4,5 @@
 class FocusedWindowProcessIdSelectionStrategy : public ProcessIdSelectionStrategy
 {
 public:
-	DWORD processId();
+	virtual DWORD processId() const override;
 };
