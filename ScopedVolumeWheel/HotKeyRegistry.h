@@ -9,11 +9,11 @@ class HotKeyRegistry
 {
 public:
 	~HotKeyRegistry();
-	void registerHotKey(const HotKey& hotKey, std::shared_ptr<HotKeyHandler> handler);
+	void registerHotKey(const HotKey& hotKey, std::unique_ptr<HotKeyHandler>& handler);
 	void handle(const MSG& msg);
 private:
 	int nextHotKeyId = 0;
 	std::unordered_map<int, HotKey> idsToHotKeys;
-	std::unordered_map<HotKey, std::shared_ptr<HotKeyHandler>> handlers;
+	std::unordered_map<HotKey, std::unique_ptr<HotKeyHandler>> handlers;
 };
 

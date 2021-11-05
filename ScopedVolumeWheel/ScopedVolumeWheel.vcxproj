@@ -144,6 +144,8 @@
     <ClCompile Include="ApplicationProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="HotKey.cpp" />
+    <ClCompile Include="OptionsWindow.cpp" />
+    <ClCompile Include="SystemTrayIcon.cpp" />
     <ClCompile Include="VolumeAdjustmentHotKeyHandler.cpp" />
     <ClCompile Include="HotKeyRegistry.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -156,6 +158,9 @@
     <ClInclude Include="ApplicationProcessIdSelectionStrategy.h" />
     <ClInclude Include="FocusedWindowProcessIdSelectionStrategy.h" />
     <ClInclude Include="HotKey.h" />
+    <ClInclude Include="OptionsWindow.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SystemTrayIcon.h" />
     <ClInclude Include="VolumeAdjustmentHotKeyHandler.h" />
     <ClInclude Include="HotKeyRegistry.h" />
     <ClInclude Include="ProcessIdSelectionStrategy.h" />
@@ -163,6 +168,12 @@
     <ClInclude Include="HotKeyHandler.h" />
     <ClInclude Include="VolumeMixer.h" />
     <ClInclude Include="Win32Exception.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScopedVolumeWheel.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
