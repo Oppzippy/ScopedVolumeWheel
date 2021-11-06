@@ -11,7 +11,7 @@ OptionsWindow::OptionsWindow()
 	WNDCLASSEXW wc{ 0 };
 	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
-		LONG selfPointer = GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		LONG_PTR selfPointer = GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		OptionsWindow* self = (OptionsWindow*)selfPointer;
 		
 		switch (lParam) {
@@ -38,7 +38,7 @@ OptionsWindow::OptionsWindow()
 		hInstance,
 		NULL
 	);
-	SetWindowLongPtr(this->hWnd, GWLP_USERDATA, (LONG)this);
+	SetWindowLongPtr(this->hWnd, GWLP_USERDATA, (LONG_PTR)this);
 	this->systemTrayIcon = std::make_unique<SystemTrayIcon>(this->hWnd);
 }
 
