@@ -46,6 +46,8 @@ void VolumeDisplay::show(float level)
 	this->level = level;
 	this->visible = true;
 	ShowWindow(this->hWnd, SW_SHOWNA);
+	SetLayeredWindowAttributes(this->hWnd, RGB(0, 0, 0), 0xFF, LWA_ALPHA);
+	this->renderBar();
 	this->render();
 }
 
@@ -81,10 +83,8 @@ void VolumeDisplay::render() {
 	steady_clock::duration elapsed = now - this->startTime;
 	long long nanoSeconds = elapsed.count();
 
-	this->renderBar();
-
 	if (nanoSeconds < this->duration) {
-		SetLayeredWindowAttributes(this->hWnd, RGB(0, 0, 0), 0xFF, LWA_ALPHA);
+		// SetLayeredWindowAttributes(this->hWnd, RGB(0, 0, 0), 0xFF, LWA_ALPHA);
 	} else if (nanoSeconds - this->duration < this->fadeTime) {
 		float opacity = 1.0f - (static_cast<float>(nanoSeconds) - this->duration) / this->fadeTime;
 		BYTE opacityByte = static_cast<BYTE>(opacity * 0xFF);

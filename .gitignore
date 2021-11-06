@@ -1,3 +1,4 @@
 .vs
-Debug
-Release
+/ScopedVolumeWheel/Debug
+/ScopedVolumeWheel/Release
+/ScopedVolumeWheel/x64
