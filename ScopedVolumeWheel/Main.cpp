@@ -34,15 +34,15 @@ void registerHandlers(
 
 int main()
 {
-    SpdlogGlobalConfiguration::configure();
-
-    HRESULT result = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    if (result != S_OK) {
-        spdlog::critical("CoInitializeEx failed with code {}", result);
-        return 1;
-    }
-
     try {
+        SpdlogGlobalConfiguration::configure();
+
+        HRESULT result = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        if (result != S_OK) {
+            spdlog::critical("CoInitializeEx failed with code {}", result);
+            return 1;
+        }
+
         std::shared_ptr<OptionsWindow> opts(new OptionsWindow());
         spdlog::info("Initialized OptionsWindow");
         std::shared_ptr<HotKeyRegistry> registry(new HotKeyRegistry());
