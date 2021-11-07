@@ -18,7 +18,7 @@ jobs:
           arch: amd64_x86
       - name: Build amd64_x86
         run: |
-          msbuild
+          msbuild -p:Configuration=Release
 
       - name: Setup msvc amd64
         uses: ilammy/msvc-dev-cmd@v1
@@ -26,4 +26,4 @@ jobs:
           arch: amd64
       - name: Build amd64
         run: |
-          msbuild
+          msbuild -p:Configuration=Release
