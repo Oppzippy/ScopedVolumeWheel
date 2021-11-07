@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <WinUser.h>
 #include <stdexcept>
+#include "spdlog/spdlog.h"
 #include "VolumeMixer.h"
 #include "Win32Exception.h"
 #include "VolumeDisplay.h"
@@ -10,6 +11,7 @@
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 #include "ApplicationProcessIdSelectionStrategy.h"
 #include "OptionsWindow.h"
+#include "SpdlogGlobalConfiguration.h"
 
 void registerHandlers(
     std::shared_ptr<HotKeyRegistry> registry,
@@ -32,36 +34,57 @@ void registerHandlers(
 
 int main()
 {
-    OptionsWindow opts;
-    HRESULT result = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    SpdlogGlobalConfiguration::configure();
+
+    HRESULT result = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
     if (result != S_OK) {
-        std::cerr << "CoInitializeEx failed with code " << std::to_string(result) << std::endl;
+        spdlog::critical("CoInitializeEx failed with code {}", result);
+        return 1;
     }
 
-    std::shared_ptr<HotKeyRegistry> registry(new HotKeyRegistry());
-    std::shared_ptr<VolumeMixer> mixer(new VolumeMixer());
-    std::shared_ptr<VolumeDisplay> display(new VolumeDisplay());
+    try {
+        std::shared_ptr<OptionsWindow> opts(new OptionsWindow());
+        spdlog::info("Initialized OptionsWindow");
+        std::shared_ptr<HotKeyRegistry> registry(new HotKeyRegistry());
+        spdlog::info("Initialized HotKeyRegistry");
+        std::shared_ptr<VolumeMixer> mixer(new VolumeMixer());
+        spdlog::info("Initialized VolumeMixer");
+        std::shared_ptr<VolumeDisplay> display(new VolumeDisplay());
+        spdlog::info("Initialized VolumeDisplay");
 
-    registerHandlers(registry, mixer, display);
+        registerHandlers(registry, mixer, display);
+        spdlog::info("Registered handlers");
 
-    MSG msg{};
-    while (true) {
-        while (PeekMessage(&msg, NULL, WM_HOTKEY, WM_HOTKEY, true) != 0) {
-            switch (msg.message) {
-            case WM_HOTKEY:
-                registry->handle(msg);
+        MSG msg{};
+        while (true) {
+            while (PeekMessage(&msg, NULL, WM_HOTKEY, WM_HOTKEY, true) != 0) {
+                switch (msg.message) {
+                case WM_HOTKEY:
+                    registry->handle(msg);
+                    break;
+                }
+            }
+            if (msg.message == WM_QUIT) {
                 break;
             }
+            display->tick();
+            Sleep(16);
         }
-        if (msg.message == WM_QUIT) {
-            // WM_QUIT will make nextMessage return 0
-            break;
-        }
-        display->tick();
-        Sleep(16);
+
+        CoUninitialize();
+    } catch (std::exception e) {
+        spdlog::critical("Unexpected exception: {}", e.what());
+        std::string errorMessage = std::string("Unexpected exception: ") + e.what();
+        std::wstring errorMessageW = std::wstring(errorMessage.begin(), errorMessage.end());
+        MessageBox(
+            NULL,
+            errorMessageW.c_str(),
+            L"ScopedVolumeWheel crashed!",
+            MB_OK
+        );
+        return 1;
     }
 
-    CoUninitialize();
     return 0;
 }
 
