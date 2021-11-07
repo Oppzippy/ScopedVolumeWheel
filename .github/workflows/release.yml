@@ -7,6 +7,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Setup msvc amd64_x86
         uses: ilammy/msvc-dev-cmd@v1
         with:
