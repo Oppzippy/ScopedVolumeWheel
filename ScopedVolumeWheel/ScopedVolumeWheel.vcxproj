@@ -160,6 +160,7 @@
     <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="HotKey.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
+    <ClCompile Include="ScopedVolumeWheel.cpp" />
     <ClCompile Include="SpdlogGlobalConfiguration.cpp" />
     <ClCompile Include="SystemTrayIcon.cpp" />
     <ClCompile Include="VolumeAdjustmentHotKeyHandler.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="HotKey.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ScopedVolumeWheel.h" />
     <ClInclude Include="SpdlogGlobalConfiguration.h" />
     <ClInclude Include="SystemTrayIcon.h" />
     <ClInclude Include="VolumeAdjustmentHotKeyHandler.h" />

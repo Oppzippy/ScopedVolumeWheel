@@ -8,7 +8,7 @@ HotKeyRegistry::~HotKeyRegistry()
 	}
 }
 
-void HotKeyRegistry::registerHotKey(const HotKey& hotKey, std::unique_ptr<HotKeyHandler>& handler)
+void HotKeyRegistry::registerHotKey(const HotKey& hotKey, std::unique_ptr<HotKeyHandler> handler)
 {
 	RegisterHotKey(NULL, this->nextHotKeyId, hotKey.modifiers, hotKey.vk);
 	this->idsToHotKeys[this->nextHotKeyId] = hotKey;

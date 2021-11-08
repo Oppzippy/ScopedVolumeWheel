@@ -9,7 +9,7 @@ class HotKeyRegistry
 {
 public:
 	~HotKeyRegistry();
-	void registerHotKey(const HotKey& hotKey, std::unique_ptr<HotKeyHandler>& handler);
+	void registerHotKey(const HotKey& hotKey, const std::unique_ptr<HotKeyHandler> handler);
 	void handle(const MSG& msg);
 private:
 	int nextHotKeyId = 0;

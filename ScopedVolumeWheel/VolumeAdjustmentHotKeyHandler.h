@@ -9,16 +9,16 @@ class VolumeAdjustmentHotKeyHandler : public HotKeyHandler
 {
 public:
 	VolumeAdjustmentHotKeyHandler(
-		std::shared_ptr<VolumeMixer> volumeMixer,
-		std::shared_ptr<VolumeDisplay> volumeDisplay,
-		std::shared_ptr<const ProcessIdSelectionStrategy> processIdSelectionStrategy,
+		VolumeMixer& volumeMixer,
+		VolumeDisplay& volumeDisplay,
+		ProcessIdSelectionStrategy& processIdSelectionStrategy,
 		float adjustment
 	);
 	virtual void handle(const HotKey& hotKey);
 private:
-	std::shared_ptr<const ProcessIdSelectionStrategy> processIdSelectionStrategy;
-	std::shared_ptr<VolumeMixer> volumeMixer;
-	std::shared_ptr<VolumeDisplay> volumeDisplay;
+	VolumeMixer& volumeMixer;
+	ProcessIdSelectionStrategy& processIdSelectionStrategy;
+	VolumeDisplay& volumeDisplay;
 	float adjustment;
 };
 
