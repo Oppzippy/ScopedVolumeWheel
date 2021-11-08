@@ -1,9 +1,9 @@
 name: Release
 
 on:
-  release:
-    types:
-      - created
+  push:
+    tags:
+      - "*"
 
 jobs:
   build:
@@ -12,18 +12,39 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Setup msvc amd64_x86
+      - name: Install NSIS
+        run: choco install nsis
+      - name: Setup msvc x86
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64_x86
-      - name: Build amd64_x86
+          arch: x86
+      - name: Build x86
         run: |
           msbuild -p:Configuration=Release
 
-      - name: Setup msvc amd64
+      - name: Setup msvc x86_64
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64
-      - name: Build amd64
+          arch: x86_64
+      - name: Build x86_64
         run: |
           msbuild -p:Configuration=Release
+
+      - name: Create x86 installer
+        run: makensis .\Package\NSIS\Installer.nsi
+      - name: Create x86_64 installer
+        run: makensis /Dx86_64 .\Package\NSIS\Installer.nsi
+
+      - name: Rename release assets
+        run: |
+          mv Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86.exe
+          mv x64\Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86_64.exe
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Package\NSIS\ScopedVolumeWheel-x86-setup.exe
+            Package\NSIS\ScopedVolumeWheel-x86_64-setup.exe
+            ScopedVolumeWheel-x86.exe
+            ScopedVolumeWheel-x86_64.exe
