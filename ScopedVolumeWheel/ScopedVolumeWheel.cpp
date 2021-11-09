@@ -32,6 +32,10 @@ ScopedVolumeWheel::ScopedVolumeWheel()
     registry->registerHotKey(HotKey(VK_VOLUME_DOWN, 0), std::move(volumeDownHandler));
     registry->registerHotKey(HotKey(VK_VOLUME_UP, MOD_SHIFT), std::move(spotifyVolumeUpHandler));
     registry->registerHotKey(HotKey(VK_VOLUME_DOWN, MOD_SHIFT), std::move(spotifyVolumeDownHandler));
+
+    this->optionsWindow->setMusicPlayerChangeHandler([this](const std::wstring& applicationName) {
+        this->setMusicPlayer(applicationName);
+    });
 }
 
 void ScopedVolumeWheel::run()
@@ -51,4 +55,8 @@ void ScopedVolumeWheel::run()
         this->display->tick();
         Sleep(16);
     }
+}
+
+void ScopedVolumeWheel::setMusicPlayer(const std::wstring& applicationName) {
+    this->musicPlayerStrategy->setApplicationName(applicationName);
 }

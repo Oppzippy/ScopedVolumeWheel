@@ -13,7 +13,7 @@ OptionsWindow::OptionsWindow()
 	wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
 		LONG_PTR selfPointer = GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		OptionsWindow* self = (OptionsWindow*)selfPointer;
-		
+
 		switch (lParam) {
 		case WM_RBUTTONUP:
 			self->getSystemTrayIcon()->showMenu();
@@ -44,6 +44,10 @@ OptionsWindow::OptionsWindow()
 
 OptionsWindow::~OptionsWindow() {
 	DestroyWindow(this->hWnd);
+}
+
+void OptionsWindow::setMusicPlayerChangeHandler(std::function<void(const std::wstring& applicationName)> handler) {
+	this->systemTrayIcon->setMusicPlayerChangeHandler(handler);
 }
 
 const std::unique_ptr<SystemTrayIcon>& OptionsWindow::getSystemTrayIcon()

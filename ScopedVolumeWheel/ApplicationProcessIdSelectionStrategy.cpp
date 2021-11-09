@@ -43,6 +43,11 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
 	return 0;
 }
 
+void ApplicationProcessIdSelectionStrategy::setApplicationName(const std::wstring& applicationName)
+{
+	this->applicationName = applicationName;
+}
+
 std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
 {
 	HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
