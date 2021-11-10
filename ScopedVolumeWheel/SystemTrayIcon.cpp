@@ -78,7 +78,7 @@ HMENU SystemTrayIcon::musicPlayerSelectionMenu() {
 		MENUITEMINFO item{};
 		item.cbSize = sizeof(item);
 		item.fType = MFT_RADIOCHECK;
-		item.fState = i == 0 ? MFS_CHECKED : MFS_UNCHECKED;
+		item.fState = application == this->selectedMusicPlayer ? MFS_CHECKED : MFS_UNCHECKED;
 		item.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_STATE | MIIM_ID;
 		item.wID = this->nextMenuItemId++;
 
@@ -113,25 +113,35 @@ void SystemTrayIcon::showMenu()
 		result >= this->musicPlayerItemIdStartIndex &&
 		result < this->musicPlayerItemIdStartIndex + this->musicApplications.size()
 	) {
-		const std::wstring& selectedItem = this->musicApplications[result - this->musicPlayerItemIdStartIndex];
+		this->selectedMusicPlayer = this->musicApplications[result - this->musicPlayerItemIdStartIndex];
 
-		for (UINT i = 0; i < this->musicApplications.size(); i++) {
-			UINT itemId = i + this->musicPlayerItemIdStartIndex;
-			MENUITEMINFO item{};
-			item.cbSize = sizeof(item);
-			item.fState = this->musicApplications[i] == selectedItem ? MFS_CHECKED : MFS_UNCHECKED;
-			item.fMask = MIIM_STATE;
-
-			SetMenuItemInfo(this->musicPlayerMenu, itemId, false, &item);
-		}
+		this->updateMusicPlayerMenu();
 
 		if (this->musicPlayerChangeHandler) {
-			this->musicPlayerChangeHandler(selectedItem);
+			this->musicPlayerChangeHandler(this->selectedMusicPlayer);
 		}
 		else {
 			spdlog::warn("musicPlayerChangeHandler is not set");
 		}
 	}
+}
+
+void SystemTrayIcon::updateMusicPlayerMenu() {
+	for (UINT i = 0; i < this->musicApplications.size(); i++) {
+		UINT itemId = i + this->musicPlayerItemIdStartIndex;
+		MENUITEMINFO item{};
+		item.cbSize = sizeof(item);
+		item.fState = this->musicApplications[i] == this->selectedMusicPlayer ? MFS_CHECKED : MFS_UNCHECKED;
+		item.fMask = MIIM_STATE;
+
+		SetMenuItemInfo(this->musicPlayerMenu, itemId, false, &item);
+	}
+}
+
+void SystemTrayIcon::setSelectedMusicPlayer(const std::wstring& applicationName)
+{
+	this->selectedMusicPlayer = applicationName;
+	this->updateMusicPlayerMenu();
 }
 
 void SystemTrayIcon::setMusicPlayerChangeHandler(std::function<void(const std::wstring& applicationName)> handler)

@@ -50,6 +50,10 @@ void OptionsWindow::setMusicPlayerChangeHandler(std::function<void(const std::ws
 	this->systemTrayIcon->setMusicPlayerChangeHandler(handler);
 }
 
+void OptionsWindow::setSelectedMusicPlayer(const std::wstring& applicationName) {
+	this->systemTrayIcon->setSelectedMusicPlayer(applicationName);
+}
+
 const std::unique_ptr<SystemTrayIcon>& OptionsWindow::getSystemTrayIcon()
 {
 	return this->systemTrayIcon;

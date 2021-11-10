@@ -11,6 +11,7 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/dist_sink.h"
 #include "Win32Exception.h"
+#include "ApplicationPaths.h"
 
 void SpdlogGlobalConfiguration::configure()
 {
@@ -29,14 +30,11 @@ void SpdlogGlobalConfiguration::configure()
 
 std::wstring SpdlogGlobalConfiguration::logPath()
 {
-    PWSTR appDataPath = NULL;
-    HRESULT result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &appDataPath);
-    throwWin32ExceptionIfNotOk("SHGetFolderPathW", result);
+    std::wstring storagePath = ApplicationPaths::getStoragePath();
 
     PWSTR filePath = NULL;
-    result = PathAllocCombine(appDataPath, L"ScopedVolumeWheel\\logs\\log.txt", PATHCCH_NONE, &filePath);
+    HRESULT result = PathAllocCombine(storagePath.c_str(), L"logs\\log.txt", PATHCCH_NONE, &filePath);
     throwWin32ExceptionIfNotOk("PathAllocCombine", result);
-    CoTaskMemFree(appDataPath);
 
     std::wstring filePathString = std::wstring(filePath);
     CoTaskMemFree(filePath);

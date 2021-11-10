@@ -11,6 +11,8 @@ public:
 	SystemTrayIcon(HWND hwnd);
 	~SystemTrayIcon();
 	void showMenu();
+	void updateMusicPlayerMenu();
+	void setSelectedMusicPlayer(const std::wstring& applicationName);
 	void setMusicPlayerChangeHandler(std::function<void(const std::wstring& applicationName)> handler);
 private:
 	const std::vector<std::wstring> musicApplications = {
@@ -22,12 +24,16 @@ private:
 		L"chrome.exe",
 		L"firefox.exe",
 	};
+	std::wstring selectedMusicPlayer = L"Spotify.exe";
+
 	NOTIFYICONDATA iconData{};
 	HMENU contextMenu{};
 	HMENU musicPlayerMenu;
-	UINT nextMenuItemId = 0;
+	// Start at 1 to distinguish TrackPopupMenuEx's 0 return from an id
+	UINT nextMenuItemId = 1;
 	UINT exitMenuItemId = 0;
 	UINT musicPlayerItemIdStartIndex = 0;
+
 	std::function<void(const std::wstring& applicationName)> musicPlayerChangeHandler;
 
 	void addExitMenuItem(UINT index);

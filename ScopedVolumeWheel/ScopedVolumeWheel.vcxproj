@@ -91,7 +91,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\spdlog\include;..\tomlplusplus\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,7 +156,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ApplicationPaths.cpp" />
     <ClCompile Include="ApplicationProcessIdSelectionStrategy.cpp" />
+    <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="HotKey.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
@@ -172,7 +174,9 @@
     <ClCompile Include="Win32Exception.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ApplicationPaths.h" />
     <ClInclude Include="ApplicationProcessIdSelectionStrategy.h" />
+    <ClInclude Include="Configuration.h" />
     <ClInclude Include="FocusedWindowProcessIdSelectionStrategy.h" />
     <ClInclude Include="HotKey.h" />
     <ClInclude Include="OptionsWindow.h" />

@@ -1,13 +1,20 @@
 #include "ScopedVolumeWheel.h"
 #include <memory>
 #include <string>
+#include <Windows.h>
+#include <PathCch.h>
 #include "spdlog/spdlog.h"
 #include "ApplicationProcessIdSelectionStrategy.h"
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 #include "VolumeAdjustmentHotKeyHandler.h"
+#include "ApplicationPaths.h"
+#include "Win32Exception.h"
 
 ScopedVolumeWheel::ScopedVolumeWheel()
 {
+    this->config = std::make_unique<Configuration>(this->getConfigFilePath());
+    spdlog::info("Loaded Configuration");
+
     this->optionsWindow = std::make_unique<OptionsWindow>();
     spdlog::info("Initialized OptionsWindow");
 
@@ -20,8 +27,10 @@ ScopedVolumeWheel::ScopedVolumeWheel()
     this->display = std::make_unique<VolumeDisplay>();
     spdlog::info("Initialized VolumeDisplay");
 
+    this->optionsWindow->setSelectedMusicPlayer(this->config->getMusicPlayer());
+
     this->focusedWindowStrategy = std::make_unique<FocusedWindowProcessIdSelectionStrategy>();
-    this->musicPlayerStrategy = std::make_unique<ApplicationProcessIdSelectionStrategy>(std::wstring(L"Spotify.exe"));
+    this->musicPlayerStrategy = std::make_unique<ApplicationProcessIdSelectionStrategy>(this->config->getMusicPlayer());
 
     auto volumeUpHandler = std::make_unique<VolumeAdjustmentHotKeyHandler>(*this->mixer, *this->display, *this->focusedWindowStrategy, VOLUME_ADJUSTMENT);
     auto volumeDownHandler = std::make_unique<VolumeAdjustmentHotKeyHandler>(*this->mixer, *this->display, *this->focusedWindowStrategy, -VOLUME_ADJUSTMENT);
@@ -59,4 +68,18 @@ void ScopedVolumeWheel::run()
 
 void ScopedVolumeWheel::setMusicPlayer(const std::wstring& applicationName) {
     this->musicPlayerStrategy->setApplicationName(applicationName);
+    this->config->setMusicPlayer(applicationName);
+}
+
+std::wstring ScopedVolumeWheel::getConfigFilePath() {
+    std::wstring storagePath = ApplicationPaths::getStoragePath();
+
+    PWSTR filePath = NULL;
+    HRESULT result = PathAllocCombine(storagePath.c_str(), L"config.toml", PATHCCH_NONE, &filePath);
+    throwWin32ExceptionIfNotOk("PathAllocCombine", result);
+
+    std::wstring filePathString = std::wstring(filePath);
+    CoTaskMemFree(filePath);
+
+    return filePathString;
 }

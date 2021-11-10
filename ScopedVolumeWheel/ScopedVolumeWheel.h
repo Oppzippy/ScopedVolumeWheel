@@ -5,6 +5,7 @@
 #include "OptionsWindow.h"
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 #include "ApplicationProcessIdSelectionStrategy.h"
+#include "Configuration.h"
 
 class ScopedVolumeWheel
 {
@@ -21,5 +22,9 @@ private:
 
 	std::unique_ptr<FocusedWindowProcessIdSelectionStrategy> focusedWindowStrategy;
 	std::unique_ptr<ApplicationProcessIdSelectionStrategy> musicPlayerStrategy;
+
+	std::unique_ptr<Configuration> config;
+
+	std::wstring getConfigFilePath();
 };
 
