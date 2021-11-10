@@ -24,11 +24,13 @@ jobs:
           msbuild -p:Configuration=Release -p:Platform=x86
       - name: Create x86 installer
         run: makensis .\Package\NSIS\Installer.nsi
+      - name: Rename executable
+        run: mv Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86.exe
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: ScopedVolumeWheel-x86.exe
-          path: Release\ScopedVolumeWheel.exe
+          path: ScopedVolumeWheel-x86.exe
       - name: Upload installer artifact
         uses: actions/upload-artifact@v2
         with:
@@ -53,11 +55,13 @@ jobs:
           msbuild -p:Configuration=Release -p:Platform=x64
       - name: Create x86_64 installer
         run: makensis /Dx86_64 .\Package\NSIS\Installer.nsi
+      - name: Rename executable
+        run: mv x64\Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86_64.exe
       - name: Upload executable artifact
         uses: actions/upload-artifact@v2
         with:
           name: ScopedVolumeWheel-x86_64.exe
-          path: x64\Release\ScopedVolumeWheel.exe
+          path: ScopedVolumeWheel-x86_64.exe
       - name: Upload installer artifact
         uses: actions/upload-artifact@v2
         with:
