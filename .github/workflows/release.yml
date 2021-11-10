@@ -6,7 +6,7 @@ on:
       - "*"
 
 jobs:
-  build:
+  build_x86:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,34 +17,79 @@ jobs:
       - name: Setup msvc x86
         uses: ilammy/msvc-dev-cmd@v1
         with:
+          toolset: "14.0"
           arch: x86
       - name: Build x86
         run: |
           msbuild -p:Configuration=Release
+      - name: Create x86 installer
+        run: makensis .\Package\NSIS\Installer.nsi
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86.exe
+          path: Release\ScopedVolumeWheel.exe
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86-setup.exe
+          path: Package\NSIS\ScopedVolumeWheel-x86-setup.exe
 
+  build_x86_64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install NSIS
+        run: choco install nsis
       - name: Setup msvc x86_64
         uses: ilammy/msvc-dev-cmd@v1
         with:
+          toolset: "14.0"
           arch: x86_64
       - name: Build x86_64
         run: |
           msbuild -p:Configuration=Release
-
-      - name: Create x86 installer
-        run: makensis .\Package\NSIS\Installer.nsi
       - name: Create x86_64 installer
         run: makensis /Dx86_64 .\Package\NSIS\Installer.nsi
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86_64.exe
+          path: x64\Release\ScopedVolumeWheel.exe
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86_64-setup.exe
+          path: Package\NSIS\ScopedVolumeWheel-x86_64-setup.exe
 
-      - name: Rename release assets
-        run: |
-          mv Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86.exe
-          mv x64\Release\ScopedVolumeWheel.exe ScopedVolumeWheel-x86_64.exe
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_x86, build_x86_64]
+    steps:
+      - name: Download x86 executable
+        uses: actions/download-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86.exe
+      - name: Download x86 installer
+        uses: actions/download-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86-setup.exe
+      - name: Download x86_64 executable
+        uses: actions/download-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86_64.exe
+      - name: Download x86_64 installer
+        uses: actions/download-artifact@v2
+        with:
+          name: ScopedVolumeWheel-x86_64-setup.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            Package\NSIS\ScopedVolumeWheel-x86-setup.exe
-            Package\NSIS\ScopedVolumeWheel-x86_64-setup.exe
             ScopedVolumeWheel-x86.exe
+            ScopedVolumeWheel-x86-setup.exe
             ScopedVolumeWheel-x86_64.exe
+            ScopedVolumeWheel-x86_64-setup.exe
