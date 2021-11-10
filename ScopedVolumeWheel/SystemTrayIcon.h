@@ -19,7 +19,7 @@ private:
 		L"foobar2000.exe",
 		L"wmplayer.exe",
 		L"msedge.exe",
-		L"chrome.exe"
+		L"chrome.exe",
 		L"firefox.exe",
 	};
 	NOTIFYICONDATA iconData{};
