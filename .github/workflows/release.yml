@@ -7,21 +7,21 @@ on:
 
 jobs:
   build_x86:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
       - name: Install NSIS
         run: choco install nsis
-      - name: Setup msvc x86
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
         with:
-          toolset: "14.0"
-          arch: x86
+          vs-prerelease: true
+          msbuild-architecture: x86
       - name: Build x86
         run: |
-          msbuild -p:Configuration=Release
+          msbuild -p:Configuration=Release -p:Platform=x86
       - name: Create x86 installer
         run: makensis .\Package\NSIS\Installer.nsi
       - name: Upload executable artifact
@@ -36,21 +36,21 @@ jobs:
           path: Package\NSIS\ScopedVolumeWheel-x86-setup.exe
 
   build_x86_64:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
       - name: Install NSIS
         run: choco install nsis
-      - name: Setup msvc x86_64
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
         with:
-          toolset: "14.0"
-          arch: x86_64
+          vs-prerelease: true
+          msbuild-architecture: x64
       - name: Build x86_64
         run: |
-          msbuild -p:Configuration=Release
+          msbuild -p:Configuration=Release -p:Platform=x64
       - name: Create x86_64 installer
         run: makensis /Dx86_64 .\Package\NSIS\Installer.nsi
       - name: Upload executable artifact
