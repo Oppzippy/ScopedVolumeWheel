@@ -73,15 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -159,11 +163,13 @@
     <ClCompile Include="ApplicationPaths.cpp" />
     <ClCompile Include="ApplicationProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="Configuration.cpp" />
+    <ClCompile Include="ExceptionWithLocation.cpp" />
     <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="HotKey.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
     <ClCompile Include="ScopedVolumeWheel.cpp" />
     <ClCompile Include="SpdlogGlobalConfiguration.cpp" />
+    <ClCompile Include="StringEncoding.cpp" />
     <ClCompile Include="SystemTrayIcon.cpp" />
     <ClCompile Include="VolumeAdjustmentHotKeyHandler.cpp" />
     <ClCompile Include="HotKeyRegistry.cpp" />
@@ -177,12 +183,14 @@
     <ClInclude Include="ApplicationPaths.h" />
     <ClInclude Include="ApplicationProcessIdSelectionStrategy.h" />
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ExceptionWithLocation.h" />
     <ClInclude Include="FocusedWindowProcessIdSelectionStrategy.h" />
     <ClInclude Include="HotKey.h" />
     <ClInclude Include="OptionsWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScopedVolumeWheel.h" />
     <ClInclude Include="SpdlogGlobalConfiguration.h" />
+    <ClInclude Include="StringEncoding.h" />
     <ClInclude Include="SystemTrayIcon.h" />
     <ClInclude Include="VolumeAdjustmentHotKeyHandler.h" />
     <ClInclude Include="HotKeyRegistry.h" />

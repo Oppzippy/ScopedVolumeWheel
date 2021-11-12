@@ -34,7 +34,7 @@ std::wstring SpdlogGlobalConfiguration::logPath()
 
     PWSTR filePath = NULL;
     HRESULT result = PathAllocCombine(storagePath.c_str(), L"logs\\log.txt", PATHCCH_NONE, &filePath);
-    throwWin32ExceptionIfNotOk("PathAllocCombine", result);
+    throwWin32ExceptionIfError("PathAllocCombine", result);
 
     std::wstring filePathString = std::wstring(filePath);
     CoTaskMemFree(filePath);

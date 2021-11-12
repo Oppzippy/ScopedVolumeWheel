@@ -8,11 +8,11 @@ std::wstring ApplicationPaths::getStoragePath()
 {
     PWSTR appDataPath = NULL;
     HRESULT result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &appDataPath);
-    throwWin32ExceptionIfNotOk("SHGetFolderPathW", result);
+    throwWin32ExceptionIfError("SHGetFolderPathW", result);
 
     PWSTR filePath = NULL;
     result = PathAllocCombine(appDataPath, L"ScopedVolumeWheel", PATHCCH_NONE, &filePath);
-    throwWin32ExceptionIfNotOk("PathAllocCombine", result);
+    throwWin32ExceptionIfError("PathAllocCombine", result);
     CoTaskMemFree(appDataPath);
 
     std::wstring filePathString = std::wstring(filePath);

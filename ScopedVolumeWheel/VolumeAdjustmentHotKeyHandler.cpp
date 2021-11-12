@@ -17,6 +17,9 @@ void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
     DWORD processId = this->processIdSelectionStrategy.processId();
     if (processId != 0) {
         float newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
-        this->volumeDisplay.show(newVolume);
+        // TODO use exception instead of NAN
+        if (!isnan(newVolume)) {
+            this->volumeDisplay.show(newVolume);
+        }
     }
 }

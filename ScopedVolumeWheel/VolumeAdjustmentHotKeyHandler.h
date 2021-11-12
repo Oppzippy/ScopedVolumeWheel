@@ -12,6 +12,7 @@ public:
         VolumeDisplay& volumeDisplay,
         ProcessIdSelectionStrategy& processIdSelectionStrategy,
         float adjustment);
+    virtual ~VolumeAdjustmentHotKeyHandler() {};
     virtual void handle(const HotKey& hotKey);
 
 private:

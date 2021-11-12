@@ -1,4 +1,5 @@
 #include "VolumeDisplay.h"
+#include "Win32Exception.h"
 #include <WinUser.h>
 #include <Windows.h>
 #include <iostream>
@@ -18,7 +19,8 @@ VolumeDisplay::VolumeDisplay()
     };
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    auto x = RegisterClassExW(&wc);
+    ATOM atom = RegisterClassExW(&wc);
+    throwWin32ExceptionIfNotSuccess("RegisterClassExW", atom != 0);
 
     this->hWnd = CreateWindowExW(
         WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_LAYERED,
@@ -105,7 +107,7 @@ void VolumeDisplay::renderBar()
 
     MoveWindow(this->hWnd, 0, 0, width, height, false);
 
-    int filledWidth = width * level;
+    int filledWidth = static_cast<int>(width * level);
 
     HDC dc = GetDC(this->hWnd);
 

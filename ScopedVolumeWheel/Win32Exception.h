@@ -1,18 +1,26 @@
 #pragma once
+#include "ExceptionWithLocation.h"
 #include <Windows.h>
 #include <exception>
 #include <string>
 
-class Win32Exception : public std::exception {
+class Win32Exception : public ExceptionWithLocation {
 public:
-    Win32Exception(const std::string& what, const HRESULT why, const char* file, int line);
+    Win32Exception(const char* file, int line, const std::string& cause, const HRESULT errorCode);
+    // errorCode is from GetLastError()
+    Win32Exception(const char* file, int line, const std::string&, const DWORD errorCode);
     virtual const char* what() const;
 
 private:
     std::string message;
+
+    void createMessage(const std::string& cause, const DWORD errorCode);
 };
 
-#define throwWin32Exception(what, why) throw Win32Exception(what, why, __FILE__, __LINE__);
-#define throwWin32ExceptionIfNotOk(what, why) \
-    if (why != S_OK)                          \
-        throwWin32Exception(what, why);
+#define win32Exception(what, why) exceptionWithLocation(Win32Exception, what, why);
+#define throwWin32ExceptionIfError(what, errorCode) \
+    if (errorCode != S_OK)                          \
+        throw win32Exception(what, errorCode);
+#define throwWin32ExceptionIfNotSuccess(what, isSuccess) \
+    if (!isSuccess)                                      \
+        throw win32Exception(what, GetLastError());

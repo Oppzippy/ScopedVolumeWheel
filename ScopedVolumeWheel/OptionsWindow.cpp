@@ -1,4 +1,5 @@
 #include "OptionsWindow.h"
+#include "Win32Exception.h"
 #include <iostream>
 #include <string>
 #include <strsafe.h>
@@ -24,7 +25,8 @@ OptionsWindow::OptionsWindow()
     };
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    auto x = RegisterClassExW(&wc);
+    ATOM atom = RegisterClassExW(&wc);
+    throwWin32ExceptionIfNotSuccess("RegisterClassExW", atom != 0);
 
     this->hWnd = CreateWindowExW(
         WS_EX_OVERLAPPEDWINDOW,

@@ -19,9 +19,8 @@ SystemTrayIcon::SystemTrayIcon(HWND hWnd)
     StringCchCopy(this->iconData.szTip, ARRAYSIZE(this->iconData.szTip), L"ScopedVolumeWheel");
 
     HANDLE icon = LoadImageW(GetModuleHandle(NULL), MAKEINTRESOURCE(MAINICON), IMAGE_ICON, 32, 32, LR_SHARED);
-    if (icon == NULL) {
-        throwWin32Exception("LoadIconW", GetLastError());
-    }
+    throwWin32ExceptionIfNotSuccess("LoadIconW", icon);
+
     this->iconData.hIcon = static_cast<HICON>(icon);
 
     Shell_NotifyIconW(NIM_ADD, &this->iconData);
