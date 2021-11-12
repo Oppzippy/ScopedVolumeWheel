@@ -1,8 +1,8 @@
 #include "ApplicationPaths.h"
-#include <Windows.h>
-#include <ShlObj.h>
-#include <PathCch.h>
 #include "Win32Exception.h"
+#include <PathCch.h>
+#include <ShlObj.h>
+#include <Windows.h>
 
 std::wstring ApplicationPaths::getStoragePath()
 {

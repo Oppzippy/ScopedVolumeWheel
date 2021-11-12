@@ -1,17 +1,17 @@
 #include "SpdlogGlobalConfiguration.h"
-#include <memory>
-#include <codecvt>
-#include <locale>
-#include <stdexcept>
-#include <Windows.h>
-#include <ShlObj.h>
-#include <PathCch.h>
-#include "spdlog/spdlog.h"
+#include "ApplicationPaths.h"
+#include "Win32Exception.h"
+#include "spdlog/sinks/dist_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/sinks/dist_sink.h"
-#include "Win32Exception.h"
-#include "ApplicationPaths.h"
+#include "spdlog/spdlog.h"
+#include <PathCch.h>
+#include <ShlObj.h>
+#include <Windows.h>
+#include <codecvt>
+#include <locale>
+#include <memory>
+#include <stdexcept>
 
 void SpdlogGlobalConfiguration::configure()
 {

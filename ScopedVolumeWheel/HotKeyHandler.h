@@ -1,10 +1,8 @@
 #pragma once
 #include "HotKey.h"
 
-class HotKeyHandler
-{
+class HotKeyHandler {
 public:
-	virtual void handle(const HotKey& hotKey) = 0;
-	virtual ~HotKeyHandler() {};
+    virtual void handle(const HotKey& hotKey) = 0;
+    virtual ~HotKeyHandler() {};
 };
-

@@ -1,10 +1,8 @@
 #pragma once
 #include <Windows.h>
 
-class ProcessIdSelectionStrategy
-{
+class ProcessIdSelectionStrategy {
 public:
-	virtual DWORD processId() const = 0;
-	virtual ~ProcessIdSelectionStrategy() {};
+    virtual DWORD processId() const = 0;
+    virtual ~ProcessIdSelectionStrategy() {};
 };
-

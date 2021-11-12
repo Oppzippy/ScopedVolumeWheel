@@ -1,14 +1,14 @@
 #include "ScopedVolumeWheel.h"
-#include <memory>
-#include <string>
-#include <Windows.h>
-#include <PathCch.h>
-#include "spdlog/spdlog.h"
+#include "ApplicationPaths.h"
 #include "ApplicationProcessIdSelectionStrategy.h"
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 #include "VolumeAdjustmentHotKeyHandler.h"
-#include "ApplicationPaths.h"
 #include "Win32Exception.h"
+#include "spdlog/spdlog.h"
+#include <PathCch.h>
+#include <Windows.h>
+#include <memory>
+#include <string>
 
 ScopedVolumeWheel::ScopedVolumeWheel()
 {
@@ -49,7 +49,7 @@ ScopedVolumeWheel::ScopedVolumeWheel()
 
 void ScopedVolumeWheel::run()
 {
-    MSG msg{};
+    MSG msg {};
     while (true) {
         while (PeekMessage(&msg, NULL, WM_HOTKEY, WM_HOTKEY, true) != 0) {
             switch (msg.message) {
@@ -66,12 +66,14 @@ void ScopedVolumeWheel::run()
     }
 }
 
-void ScopedVolumeWheel::setMusicPlayer(const std::wstring& applicationName) {
+void ScopedVolumeWheel::setMusicPlayer(const std::wstring& applicationName)
+{
     this->musicPlayerStrategy->setApplicationName(applicationName);
     this->config->setMusicPlayer(applicationName);
 }
 
-std::wstring ScopedVolumeWheel::getConfigFilePath() {
+std::wstring ScopedVolumeWheel::getConfigFilePath()
+{
     std::wstring storagePath = ApplicationPaths::getStoragePath();
 
     PWSTR filePath = NULL;

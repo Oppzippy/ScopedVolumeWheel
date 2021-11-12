@@ -3,12 +3,11 @@
 
 #define SPDLOG_WCHAR_FILENAMES
 
-class SpdlogGlobalConfiguration
-{
+class SpdlogGlobalConfiguration {
 public:
-	static void configure();
-private:
-	static const int LOG_FILE_MAX_SIZE = 1024 * 1024 * 10; // 10MiB
-	static std::wstring logPath();
-};
+    static void configure();
 
+private:
+    static const int LOG_FILE_MAX_SIZE = 1024 * 1024 * 10; // 10MiB
+    static std::wstring logPath();
+};

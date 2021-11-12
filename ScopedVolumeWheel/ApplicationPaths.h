@@ -1,9 +1,7 @@
 #pragma once
 #include <string>
 
-class ApplicationPaths
-{
+class ApplicationPaths {
 public:
-	static std::wstring getStoragePath();
+    static std::wstring getStoragePath();
 };
-

@@ -1,7 +1,7 @@
 #include "VolumeMixer.h"
 #include "Win32Exception.h"
 
-#define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS (0x00d)
+#define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS(0x00d)
 
 float VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
@@ -44,14 +44,15 @@ std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControls
 
 std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControls()
 {
-	std::vector<CComPtr<IAudioSessionControl2>> sessions;
+    std::vector<CComPtr<IAudioSessionControl2>> sessions;
 
     CComPtr<IMMDeviceCollection> devices = this->getDevices();
     UINT numDevices = 0;
     HRESULT result = devices->GetCount(&numDevices);
     throwWin32ExceptionIfNotOk("IMMDeviceCollection::GetCount", result)
 
-    for (UINT i = 0; i < numDevices; i++) {
+        for (UINT i = 0; i < numDevices; i++)
+    {
         CComPtr<IMMDevice> device;
         result = devices->Item(i, &device);
         throwWin32ExceptionIfNotOk("IMMDeviceCollection::Item", result);
@@ -89,7 +90,7 @@ CComPtr<IMMDeviceCollection> VolumeMixer::getDevices()
     CComPtr<IMMDeviceEnumerator> deviceEnumerator;
     HRESULT result = deviceEnumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator));
     throwWin32ExceptionIfNotOk("CComPtr::CoCreateInstance", result);
-    
+
     CComPtr<IMMDeviceCollection> devices;
     result = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
     throwWin32ExceptionIfNotOk("IMMDeviceEnumerator::EnumAudioEndpoints", result);

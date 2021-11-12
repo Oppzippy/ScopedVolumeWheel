@@ -1,24 +1,22 @@
 #pragma once
-#include <memory>
 #include "HotKeyHandler.h"
+#include "ProcessIdSelectionStrategy.h"
 #include "VolumeDisplay.h"
 #include "VolumeMixer.h"
-#include "ProcessIdSelectionStrategy.h"
+#include <memory>
 
-class VolumeAdjustmentHotKeyHandler : public HotKeyHandler
-{
+class VolumeAdjustmentHotKeyHandler : public HotKeyHandler {
 public:
-	VolumeAdjustmentHotKeyHandler(
-		VolumeMixer& volumeMixer,
-		VolumeDisplay& volumeDisplay,
-		ProcessIdSelectionStrategy& processIdSelectionStrategy,
-		float adjustment
-	);
-	virtual void handle(const HotKey& hotKey);
-private:
-	VolumeMixer& volumeMixer;
-	ProcessIdSelectionStrategy& processIdSelectionStrategy;
-	VolumeDisplay& volumeDisplay;
-	float adjustment;
-};
+    VolumeAdjustmentHotKeyHandler(
+        VolumeMixer& volumeMixer,
+        VolumeDisplay& volumeDisplay,
+        ProcessIdSelectionStrategy& processIdSelectionStrategy,
+        float adjustment);
+    virtual void handle(const HotKey& hotKey);
 
+private:
+    VolumeMixer& volumeMixer;
+    ProcessIdSelectionStrategy& processIdSelectionStrategy;
+    VolumeDisplay& volumeDisplay;
+    float adjustment;
+};

@@ -1,15 +1,15 @@
 #pragma once
-#include <vector>
-#include <mmdeviceapi.h>
-#include <audiopolicy.h>
 #include <atlbase.h>
+#include <audiopolicy.h>
+#include <mmdeviceapi.h>
+#include <vector>
 
-class VolumeMixer
-{
+class VolumeMixer {
 public:
-	float adjustVolumeOfProcess(DWORD processId, float adjustment);
+    float adjustVolumeOfProcess(DWORD processId, float adjustment);
+
 private:
-	std::vector<CComPtr<IAudioSessionControl2>> getAudioSessionControlsForProcess(DWORD processId);
-	std::vector<CComPtr<IAudioSessionControl2>> getAudioSessionControls();
-	CComPtr<IMMDeviceCollection> getDevices();
+    std::vector<CComPtr<IAudioSessionControl2>> getAudioSessionControlsForProcess(DWORD processId);
+    std::vector<CComPtr<IAudioSessionControl2>> getAudioSessionControls();
+    CComPtr<IMMDeviceCollection> getDevices();
 };

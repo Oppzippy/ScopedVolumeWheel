@@ -1,10 +1,10 @@
-#include <iostream>
-#include <Windows.h>
-#include <WinUser.h>
-#include <stdexcept>
-#include "spdlog/spdlog.h"
 #include "ScopedVolumeWheel.h"
 #include "SpdlogGlobalConfiguration.h"
+#include "spdlog/spdlog.h"
+#include <WinUser.h>
+#include <Windows.h>
+#include <iostream>
+#include <stdexcept>
 
 int main()
 {
@@ -29,8 +29,7 @@ int main()
             NULL,
             errorMessageW.c_str(),
             L"ScopedVolumeWheel crashed!",
-            MB_OK
-        );
+            MB_OK);
         return 1;
     }
 
@@ -40,8 +39,8 @@ int main()
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR     lpCmdLine,
-    _In_ int       nShowCmd
-) {
+    _In_ LPSTR lpCmdLine,
+    _In_ int nShowCmd)
+{
     return main();
 }

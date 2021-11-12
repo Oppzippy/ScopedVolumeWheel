@@ -1,8 +1,7 @@
 #pragma once
 #include "ProcessIdSelectionStrategy.h"
 
-class FocusedWindowProcessIdSelectionStrategy : public ProcessIdSelectionStrategy
-{
+class FocusedWindowProcessIdSelectionStrategy : public ProcessIdSelectionStrategy {
 public:
-	virtual DWORD processId() const override;
+    virtual DWORD processId() const override;
 };
