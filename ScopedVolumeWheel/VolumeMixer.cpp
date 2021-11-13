@@ -1,15 +1,15 @@
 #include "VolumeMixer.h"
-#include "ProcessNotFoundException.h"
 #include "Win32Exception.h"
+#include <optional>
 
 #define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS(0x00d)
 
-float VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
+std::optional<float> VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
     const size_t numberOfSessions = sessions.size();
     if (numberOfSessions == 0) {
-        throw exceptionWithLocation(ProcessNotFoundException, processId);
+        return std::nullopt;
     }
 
     float level = 0;

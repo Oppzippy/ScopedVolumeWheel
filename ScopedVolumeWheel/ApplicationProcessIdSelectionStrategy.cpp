@@ -1,5 +1,4 @@
 #include "ApplicationProcessIdSelectionStrategy.h"
-#include "ProcessNotFoundException.h"
 #include "Win32Exception.h"
 #include <Psapi.h>
 #include <optional>

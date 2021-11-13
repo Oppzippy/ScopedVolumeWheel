@@ -1,5 +1,4 @@
 #include "VolumeAdjustmentHotKeyHandler.h"
-#include "ProcessNotFoundException.h"
 #include "spdlog/spdlog.h"
 
 VolumeAdjustmentHotKeyHandler::VolumeAdjustmentHotKeyHandler(
@@ -18,11 +17,9 @@ void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
 {
     const DWORD processId = this->processIdSelectionStrategy.processId();
     if (processId != 0) {
-        try {
-            const float newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
-            this->volumeDisplay.show(newVolume);
-        } catch (const ProcessNotFoundException& ex) {
-            spdlog::debug("Process not found when searching volume mixer sessions: {}", ex.what());
+        const std::optional<float> newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
+        if (newVolume.has_value()) {
+            this->volumeDisplay.show(newVolume.value());
         }
     }
 }

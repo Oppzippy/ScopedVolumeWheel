@@ -183,7 +183,6 @@
     <ClCompile Include="FocusedWindowProcessIdSelectionStrategy.cpp" />
     <ClCompile Include="HotKey.cpp" />
     <ClCompile Include="OptionsWindow.cpp" />
-    <ClCompile Include="ProcessNotFoundException.cpp" />
     <ClCompile Include="ScopedVolumeWheel.cpp" />
     <ClCompile Include="SpdlogGlobalConfiguration.cpp" />
     <ClCompile Include="StringEncoding.cpp" />
@@ -204,7 +203,6 @@
     <ClInclude Include="FocusedWindowProcessIdSelectionStrategy.h" />
     <ClInclude Include="HotKey.h" />
     <ClInclude Include="OptionsWindow.h" />
-    <ClInclude Include="ProcessNotFoundException.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScopedVolumeWheel.h" />
     <ClInclude Include="SpdlogGlobalConfiguration.h" />
