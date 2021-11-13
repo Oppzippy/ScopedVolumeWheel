@@ -8,11 +8,16 @@ ApplicationProcessIdSelectionStrategy::ApplicationProcessIdSelectionStrategy(std
     this->applicationName = applicationName;
 }
 
-DWORD ApplicationProcessIdSelectionStrategy::processId() const
+DWORD ApplicationProcessIdSelectionStrategy::processId()
 {
+    std::optional<DWORD> cachedProcessId = this->getCachedProcessId();
+    if (cachedProcessId.has_value()) {
+        return cachedProcessId.value();
+    }
+
     DWORD processIds[2048] {};
     DWORD bytesNeeded = 0;
-    const bool success = EnumProcesses(processIds, sizeof(processIds), &bytesNeeded) != 0;
+    const BOOL success = EnumProcesses(processIds, sizeof(processIds), &bytesNeeded);
     throwWin32ExceptionIfNotSuccess("EnumProcesses", success);
 
     for (DWORD i = 0; i < bytesNeeded / sizeof(DWORD); i++) {
@@ -23,6 +28,8 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
         try {
             std::optional<std::wstring> fileName = this->getFileNameOfProcess(processId);
             if (fileName == this->applicationName) {
+                this->cachedProcessId = std::make_optional<DWORD>(processId);
+                this->cachedAt = std::chrono::steady_clock::now();
                 return processId;
             }
         } catch (const Win32Exception& e) {
@@ -33,9 +40,30 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
     return 0;
 }
 
+std::optional<DWORD> ApplicationProcessIdSelectionStrategy::getCachedProcessId() noexcept
+{
+    if (this->cachedProcessId.has_value() && std::chrono::steady_clock::now() - this->cachedAt < std::chrono::seconds(1)) {
+        DWORD processId = this->cachedProcessId.value();
+
+        HANDLE handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId);
+        if (handle == NULL) {
+            return std::nullopt;
+        }
+        DWORD exitCode;
+        GetExitCodeProcess(handle, &exitCode);
+        if (exitCode != STILL_ACTIVE) {
+            return std::nullopt;
+        }
+
+        return processId;
+    }
+    return std::nullopt;
+}
+
 void ApplicationProcessIdSelectionStrategy::setApplicationName(const std::wstring& applicationName)
 {
     this->applicationName = applicationName;
+    this->cachedProcessId = std::nullopt;
 }
 
 std::optional<std::wstring> ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
