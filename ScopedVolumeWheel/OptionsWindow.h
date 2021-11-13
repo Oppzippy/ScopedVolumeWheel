@@ -9,7 +9,7 @@ public:
     ~OptionsWindow();
     void setMusicPlayerChangeHandler(std::function<void(const std::wstring& applicationName)>);
     void setSelectedMusicPlayer(const std::wstring& applicationName);
-    const std::unique_ptr<SystemTrayIcon>& getSystemTrayIcon();
+    const std::unique_ptr<SystemTrayIcon>& getSystemTrayIcon() noexcept;
 
 private:
     HWND hWnd = NULL;

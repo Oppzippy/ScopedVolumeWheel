@@ -6,7 +6,7 @@ class ExceptionWithLocation : std::exception {
 public:
     ExceptionWithLocation(const char* file, int line);
     ExceptionWithLocation(const char* file, int line, const char* message);
-    virtual const char* what() const;
+    const char* what() const noexcept override;
 
 private:
     std::string message;

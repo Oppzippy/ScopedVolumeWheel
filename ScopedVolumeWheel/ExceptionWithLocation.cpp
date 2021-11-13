@@ -14,7 +14,7 @@ ExceptionWithLocation::ExceptionWithLocation(const char* file, int line, const c
     this->message += message;
 }
 
-const char* ExceptionWithLocation::what() const
+const char* ExceptionWithLocation::what() const noexcept
 {
     return this->message.c_str();
 }

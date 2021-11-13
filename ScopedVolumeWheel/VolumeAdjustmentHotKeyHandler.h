@@ -11,9 +11,9 @@ public:
         VolumeMixer& volumeMixer,
         VolumeDisplay& volumeDisplay,
         ProcessIdSelectionStrategy& processIdSelectionStrategy,
-        float adjustment);
-    virtual ~VolumeAdjustmentHotKeyHandler() {};
-    virtual void handle(const HotKey& hotKey);
+        float adjustment) noexcept;
+    ~VolumeAdjustmentHotKeyHandler() override {};
+    void handle(const HotKey& hotKey) override;
 
 private:
     VolumeMixer& volumeMixer;

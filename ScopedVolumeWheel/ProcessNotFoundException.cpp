@@ -9,7 +9,7 @@ ProcessNotFoundException::ProcessNotFoundException(const char* file, int line, D
     this->message += " not found.";
 }
 
-const char* ProcessNotFoundException::what() const
+const char* ProcessNotFoundException::what() const noexcept
 {
     return this->message.c_str();
 }

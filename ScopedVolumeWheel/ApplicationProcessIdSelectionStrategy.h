@@ -5,7 +5,7 @@
 class ApplicationProcessIdSelectionStrategy : public ProcessIdSelectionStrategy {
 public:
     ApplicationProcessIdSelectionStrategy(std::wstring applicationName);
-    virtual DWORD processId() const override;
+    DWORD processId() const override;
     void setApplicationName(const std::wstring& applicationName);
 
 private:

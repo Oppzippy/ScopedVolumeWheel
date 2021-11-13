@@ -20,8 +20,8 @@ void HotKeyRegistry::registerHotKey(const HotKey& hotKey, std::unique_ptr<HotKey
 void HotKeyRegistry::handle(const MSG& msg)
 {
     try {
-        HotKey& hotKey = this->idsToHotKeys.at(msg.wParam);
-        std::unique_ptr<HotKeyHandler>& handler = this->handlers.at(hotKey);
+        const HotKey& hotKey = this->idsToHotKeys.at(msg.wParam);
+        const std::unique_ptr<HotKeyHandler>& handler = this->handlers.at(hotKey);
         handler->handle(hotKey);
     } catch (std::out_of_range e) {
         throw exceptionWithLocation(ExceptionWithLocation, e.what());

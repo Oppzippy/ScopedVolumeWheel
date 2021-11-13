@@ -18,14 +18,14 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
     for (DWORD i = 0; i < bytesNeeded / sizeof(DWORD); i++) {
         HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processIds[i]);
         if (processHandle == NULL) {
-            DWORD err = GetLastError();
+            const DWORD err = GetLastError();
             if (err == ERROR_INVALID_PARAMETER || err == ERROR_ACCESS_DENIED) {
                 continue;
             }
             throw win32Exception("OpenProcess", err);
         }
         TCHAR filePath[MAX_PATH] {};
-        bool success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
+        success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
         if (!success) {
             CloseHandle(processHandle);
             throw win32Exception("GetModuleFileNameEx", GetLastError());
@@ -73,7 +73,7 @@ std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t* f
 {
     wchar_t fileName[MAX_PATH] {};
     wchar_t fileExtension[MAX_PATH] {};
-    errno_t result = _wsplitpath_s(filePath, NULL, 0, NULL, 0, fileName, MAX_PATH, fileExtension, MAX_PATH);
+    const errno_t result = _wsplitpath_s(filePath, NULL, 0, NULL, 0, fileName, MAX_PATH, fileExtension, MAX_PATH);
     if (result != 0) {
         std::string errorMessage = "_wsplitpath_s failed : ";
         errorMessage += std::to_string(result);

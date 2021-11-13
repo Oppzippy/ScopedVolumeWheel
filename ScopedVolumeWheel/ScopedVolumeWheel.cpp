@@ -77,7 +77,7 @@ std::wstring ScopedVolumeWheel::getConfigFilePath()
     std::wstring storagePath = ApplicationPaths::getStoragePath();
 
     PWSTR filePath = NULL;
-    HRESULT result = PathAllocCombine(storagePath.c_str(), L"config.toml", PATHCCH_NONE, &filePath);
+    const HRESULT result = PathAllocCombine(storagePath.c_str(), L"config.toml", PATHCCH_NONE, &filePath);
     throwWin32ExceptionIfError("PathAllocCombine", result);
 
     std::wstring filePathString = std::wstring(filePath);

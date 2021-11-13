@@ -17,10 +17,10 @@ Win32Exception::Win32Exception(const char* file, int line, const std::string& ca
     LPVOID errorMessageBuf = NULL;
     if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL, errorCode, NULL, (LPTSTR)&errorMessageBuf, 1024, NULL)) {
-        this->message += StringEncoding::fromWideChar((LPCTSTR)errorMessageBuf);
+        this->message += StringEncoding::fromWideChar(reinterpret_cast<LPCTSTR>(errorMessageBuf));
         LocalFree(errorMessageBuf);
     } else {
-        DWORD errorCode = GetLastError();
+        const DWORD errorCode = GetLastError();
         this->message += "FormatMessage failed with error code ";
         this->message += std::to_string(errorCode);
     }
@@ -36,7 +36,7 @@ void Win32Exception::createMessage(const std::string& cause, const DWORD errorCo
     this->message += cause;
 }
 
-const char* Win32Exception::what() const
+const char* Win32Exception::what() const noexcept
 {
     return this->message.c_str();
 }

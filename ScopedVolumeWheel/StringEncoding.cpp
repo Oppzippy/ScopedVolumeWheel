@@ -1,6 +1,7 @@
 #include "StringEncoding.h"
 #include <Windows.h>
 #include <memory>
+#include <vector>
 
 std::string StringEncoding::fromWideChar(const std::wstring& str)
 {
@@ -9,11 +10,11 @@ std::string StringEncoding::fromWideChar(const std::wstring& str)
 
 std::string StringEncoding::fromWideChar(const wchar_t* str)
 {
-    int bytesNeeded = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
-    std::unique_ptr<char[]> buffer(new char[bytesNeeded]);
-    WideCharToMultiByte(CP_UTF8, 0, str, -1, buffer.get(), bytesNeeded, NULL, NULL);
+    const int bytesNeeded = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
+    std::vector<char> buffer(bytesNeeded);
+    WideCharToMultiByte(CP_UTF8, 0, str, -1, buffer.data(), bytesNeeded, NULL, NULL);
 
-    return std::string(buffer.get());
+    return std::string(buffer.data());
 }
 
 std::wstring StringEncoding::toWideChar(const std::string& str)
@@ -23,9 +24,9 @@ std::wstring StringEncoding::toWideChar(const std::string& str)
 
 std::wstring StringEncoding::toWideChar(const char* str)
 {
-    int bytesNeeded = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
-    std::unique_ptr<wchar_t[]> buffer(new wchar_t[bytesNeeded]);
-    MultiByteToWideChar(CP_UTF8, 0, str, -1, buffer.get(), bytesNeeded);
+    const int bytesNeeded = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+    std::vector<wchar_t> buffer(bytesNeeded);
+    MultiByteToWideChar(CP_UTF8, 0, str, -1, buffer.data(), bytesNeeded);
 
-    return std::wstring(buffer.get());
+    return std::wstring(buffer.data());
 }

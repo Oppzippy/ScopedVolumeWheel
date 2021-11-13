@@ -13,7 +13,7 @@ OptionsWindow::OptionsWindow()
     wc.cbSize = sizeof(WNDCLASSEXW);
     wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
         LONG_PTR selfPointer = GetWindowLongPtr(hWnd, GWLP_USERDATA);
-        OptionsWindow* self = (OptionsWindow*)selfPointer;
+        OptionsWindow* self = reinterpret_cast<OptionsWindow*>(selfPointer);
 
         switch (lParam) {
         case WM_RBUTTONUP:
@@ -25,7 +25,7 @@ OptionsWindow::OptionsWindow()
     };
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    ATOM atom = RegisterClassExW(&wc);
+    const ATOM atom = RegisterClassExW(&wc);
     throwWin32ExceptionIfNotSuccess("RegisterClassExW", atom != 0);
 
     this->hWnd = CreateWindowExW(
@@ -39,7 +39,7 @@ OptionsWindow::OptionsWindow()
         NULL,
         hInstance,
         NULL);
-    SetWindowLongPtr(this->hWnd, GWLP_USERDATA, (LONG_PTR)this);
+    SetWindowLongPtr(this->hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
     this->systemTrayIcon = std::make_unique<SystemTrayIcon>(this->hWnd);
 }
 
@@ -58,7 +58,7 @@ void OptionsWindow::setSelectedMusicPlayer(const std::wstring& applicationName)
     this->systemTrayIcon->setSelectedMusicPlayer(applicationName);
 }
 
-const std::unique_ptr<SystemTrayIcon>& OptionsWindow::getSystemTrayIcon()
+const std::unique_ptr<SystemTrayIcon>& OptionsWindow::getSystemTrayIcon() noexcept
 {
     return this->systemTrayIcon;
 }

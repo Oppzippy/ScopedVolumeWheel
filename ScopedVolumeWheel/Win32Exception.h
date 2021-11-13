@@ -9,7 +9,7 @@ public:
     Win32Exception(const char* file, int line, const std::string& cause, const HRESULT errorCode);
     // errorCode is from GetLastError()
     Win32Exception(const char* file, int line, const std::string&, const DWORD errorCode);
-    virtual const char* what() const;
+    const char* what() const noexcept override;
 
 private:
     std::string message;

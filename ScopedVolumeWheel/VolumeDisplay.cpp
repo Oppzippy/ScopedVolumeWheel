@@ -14,12 +14,12 @@ VolumeDisplay::VolumeDisplay()
     HINSTANCE hInstance = GetModuleHandle(NULL);
     WNDCLASSEXW wc { 0 };
     wc.cbSize = sizeof(WNDCLASSEXW);
-    wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
+    wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept -> LRESULT {
         return DefWindowProc(hWnd, msg, wParam, lParam);
     };
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    ATOM atom = RegisterClassExW(&wc);
+    const ATOM atom = RegisterClassExW(&wc);
     throwWin32ExceptionIfNotSuccess("RegisterClassExW", atom != 0);
 
     this->hWnd = CreateWindowExW(
@@ -41,7 +41,7 @@ VolumeDisplay::~VolumeDisplay()
     this->hWnd = NULL;
 }
 
-void VolumeDisplay::show(float level)
+void VolumeDisplay::show(float level) noexcept
 {
     this->startTime = steady_clock::now();
     this->level = level;
@@ -52,22 +52,22 @@ void VolumeDisplay::show(float level)
     this->render();
 }
 
-void VolumeDisplay::setDuration(float duration)
+void VolumeDisplay::setDuration(float duration) noexcept
 {
     this->duration = static_cast<long long>(duration * 1e9);
 }
 
-void VolumeDisplay::setFadeTime(float fadeTime)
+void VolumeDisplay::setFadeTime(float fadeTime) noexcept
 {
     this->fadeTime = static_cast<long long>(fadeTime * 1e9);
 }
 
-bool VolumeDisplay::isVisible()
+bool VolumeDisplay::isVisible() noexcept
 {
     return this->visible;
 }
 
-void VolumeDisplay::tick()
+void VolumeDisplay::tick() noexcept
 {
     MSG msg;
     while (PeekMessageW(&msg, this->hWnd, 0, 0, PM_REMOVE) > 0) {
@@ -79,17 +79,17 @@ void VolumeDisplay::tick()
     }
 }
 
-void VolumeDisplay::render()
+void VolumeDisplay::render() noexcept
 {
-    steady_clock::time_point now = steady_clock::now();
-    steady_clock::duration elapsed = now - this->startTime;
-    long long nanoSeconds = elapsed.count();
+    const steady_clock::time_point now = steady_clock::now();
+    const steady_clock::duration elapsed = now - this->startTime;
+    const long long nanoSeconds = elapsed.count();
 
     if (nanoSeconds < this->duration) {
         // SetLayeredWindowAttributes(this->hWnd, RGB(0, 0, 0), 0xFF, LWA_ALPHA);
     } else if (nanoSeconds - this->duration < this->fadeTime) {
-        float opacity = 1.0f - (static_cast<float>(nanoSeconds) - this->duration) / this->fadeTime;
-        BYTE opacityByte = static_cast<BYTE>(opacity * 0xFF);
+        const float opacity = 1.0f - (static_cast<float>(nanoSeconds) - this->duration) / this->fadeTime;
+        const BYTE opacityByte = static_cast<BYTE>(opacity * 0xFF);
         SetLayeredWindowAttributes(this->hWnd, RGB(0, 0, 0), opacityByte, LWA_ALPHA);
     } else {
         ShowWindow(this->hWnd, SW_HIDE);
@@ -97,17 +97,17 @@ void VolumeDisplay::render()
     }
 }
 
-void VolumeDisplay::renderBar()
+void VolumeDisplay::renderBar() noexcept
 {
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    const int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    const int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    int width = screenWidth;
-    int height = screenHeight / 30;
+    const int width = screenWidth;
+    const int height = screenHeight / 30;
 
     MoveWindow(this->hWnd, 0, 0, width, height, false);
 
-    int filledWidth = static_cast<int>(width * level);
+    const int filledWidth = static_cast<int>(width * level);
 
     HDC dc = GetDC(this->hWnd);
 

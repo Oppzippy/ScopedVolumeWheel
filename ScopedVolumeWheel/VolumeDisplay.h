@@ -6,11 +6,11 @@ class VolumeDisplay {
 public:
     VolumeDisplay();
     ~VolumeDisplay();
-    void show(float level);
-    void setDuration(float duration);
-    void setFadeTime(float fadeTime);
-    bool isVisible();
-    void tick();
+    void show(float level) noexcept;
+    void setDuration(float duration) noexcept;
+    void setFadeTime(float fadeTime) noexcept;
+    bool isVisible() noexcept;
+    void tick() noexcept;
 
 private:
     HWND hWnd = 0;
@@ -20,6 +20,6 @@ private:
     bool visible = false;
     std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point startTime;
-    void render();
-    void renderBar();
+    void render() noexcept;
+    void renderBar() noexcept;
 };

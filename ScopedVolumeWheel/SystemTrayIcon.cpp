@@ -39,7 +39,7 @@ SystemTrayIcon::~SystemTrayIcon()
     Shell_NotifyIconW(NIM_DELETE, &this->iconData);
 }
 
-void SystemTrayIcon::addExitMenuItem(UINT index)
+void SystemTrayIcon::addExitMenuItem(UINT index) noexcept
 {
     MENUITEMINFO item {};
     item.cbSize = sizeof(item);
@@ -54,7 +54,7 @@ void SystemTrayIcon::addExitMenuItem(UINT index)
     InsertMenuItem(this->contextMenu, index, true, &item);
 }
 
-void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index)
+void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index) noexcept
 {
 
     MENUITEMINFO item {};
@@ -70,7 +70,7 @@ void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index)
     InsertMenuItem(this->contextMenu, index, true, &item);
 }
 
-HMENU SystemTrayIcon::musicPlayerSelectionMenu()
+HMENU SystemTrayIcon::musicPlayerSelectionMenu() noexcept
 {
     HMENU menu = CreatePopupMenu();
 
@@ -100,7 +100,7 @@ void SystemTrayIcon::showMenu()
     GetCursorPos(&cursorPosition);
 
     SetForegroundWindow(this->iconData.hWnd);
-    BOOL result = TrackPopupMenuEx(
+    const int result = TrackPopupMenuEx(
         this->contextMenu,
         TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_HORIZONTAL | TPM_RETURNCMD,
         cursorPosition.x,
@@ -111,8 +111,11 @@ void SystemTrayIcon::showMenu()
     if (result == this->exitMenuItemId) {
         PostQuitMessage(0);
     } else if (
-        result >= this->musicPlayerItemIdStartIndex && result < this->musicPlayerItemIdStartIndex + this->musicApplications.size()) {
-        this->selectedMusicPlayer = this->musicApplications[result - this->musicPlayerItemIdStartIndex];
+        const UINT unsignedResult = static_cast<UINT>(result);
+        static_cast<UINT>(result) >= this->musicPlayerItemIdStartIndex
+        && static_cast<UINT>(result) < this->musicPlayerItemIdStartIndex + this->musicApplications.size()) {
+
+        this->selectedMusicPlayer = this->musicApplications[static_cast<UINT>(result) - this->musicPlayerItemIdStartIndex];
 
         this->updateMusicPlayerMenu();
 
@@ -124,10 +127,10 @@ void SystemTrayIcon::showMenu()
     }
 }
 
-void SystemTrayIcon::updateMusicPlayerMenu()
+void SystemTrayIcon::updateMusicPlayerMenu() noexcept
 {
     for (UINT i = 0; i < this->musicApplications.size(); i++) {
-        UINT itemId = i + this->musicPlayerItemIdStartIndex;
+        const UINT itemId = i + this->musicPlayerItemIdStartIndex;
         MENUITEMINFO item {};
         item.cbSize = sizeof(item);
         item.fState = this->musicApplications[i] == this->selectedMusicPlayer ? MFS_CHECKED : MFS_UNCHECKED;

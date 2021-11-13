@@ -7,13 +7,13 @@
 float VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
-    size_t numberOfSessions = sessions.size();
+    const size_t numberOfSessions = sessions.size();
     if (numberOfSessions == 0) {
         throw exceptionWithLocation(ProcessNotFoundException, processId);
     }
 
     float level = 0;
-    for (int i = 0; i < sessions.size(); i++) {
+    for (size_t i = 0; i < numberOfSessions; i++) {
         CComPtr<IAudioSessionControl2> session = sessions[i];
         CComPtr<ISimpleAudioVolume> volume;
         HRESULT result = session->QueryInterface(&volume);
@@ -44,7 +44,7 @@ std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControls
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControls();
     auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processId](CComPtr<IAudioSessionControl2> session) {
         DWORD pId = 0;
-        HRESULT result = session->GetProcessId(&pId);
+        const HRESULT result = session->GetProcessId(&pId);
         if (result != AUDCLNT_S_NO_SINGLE_PROCESS) {
             throwWin32ExceptionIfError("IAudioSessionControl2::GetProcessId", result);
         }
@@ -70,7 +70,7 @@ std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControls
         throwWin32ExceptionIfError("IMMDeviceCollection::Item", result);
 
         CComPtr<IAudioSessionManager2> sessionManager;
-        result = device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&sessionManager);
+        result = device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_INPROC_SERVER, NULL, reinterpret_cast<LPVOID*>(&sessionManager));
         throwWin32ExceptionIfError("IMMDevice::Activate", result);
 
         CComPtr<IAudioSessionEnumerator> enumerator;
