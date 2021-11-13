@@ -63,6 +63,10 @@ void ScopedVolumeWheel::run()
         }
         this->display->tick();
         Sleep(16);
+        if (!this->display->isVisible()) {
+            const BOOL result = WaitMessage();
+            throwWin32ExceptionIfNotSuccess("WaitMessage", result);
+        }
     }
 }
 
