@@ -13,31 +13,20 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
 {
     DWORD processIds[2048] {};
     DWORD bytesNeeded = 0;
-    bool success = EnumProcesses(processIds, sizeof(processIds), &bytesNeeded) != 0;
+    const bool success = EnumProcesses(processIds, sizeof(processIds), &bytesNeeded) != 0;
     throwWin32ExceptionIfNotSuccess("EnumProcesses", success);
 
     for (DWORD i = 0; i < bytesNeeded / sizeof(DWORD); i++) {
-        HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processIds[i]);
-        if (processHandle == NULL) {
-            const DWORD err = GetLastError();
-            if (err == ERROR_INVALID_PARAMETER || err == ERROR_ACCESS_DENIED) {
-                continue;
+        try {
+            const DWORD processId = processIds[i];
+            std::wstring fileName = this->getFileNameOfProcess(processId);
+            if (fileName == this->applicationName) {
+                return processId;
             }
-            throw win32Exception("OpenProcess", err);
-        }
-        TCHAR filePath[MAX_PATH] {};
-        success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
-        if (!success) {
-            CloseHandle(processHandle);
-            throw win32Exception("GetModuleFileNameEx", GetLastError());
-        }
-
-        success = CloseHandle(processHandle);
-        throwWin32ExceptionIfNotSuccess("CloseHandle", success);
-
-        std::wstring fileName = this->getFileName(filePath);
-        if (fileName == this->applicationName) {
-            return processIds[i];
+        } catch (const Win32Exception& e) {
+            if (e.getErrorCode() != ERROR_INVALID_PARAMETER && e.getErrorCode() != ERROR_ACCESS_DENIED) {
+                throw e;
+            }
         }
     }
 
@@ -52,21 +41,20 @@ void ApplicationProcessIdSelectionStrategy::setApplicationName(const std::wstrin
 std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
 {
     HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
-    if (processHandle != NULL) {
-        TCHAR filePath[MAX_PATH] {};
-        bool success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
-        if (!success) {
-            // Try to close but throwing if it does isn't a priority
-            CloseHandle(processHandle);
-            throw win32Exception("GetFileNameSuccess", GetLastError());
-        }
+    throwWin32ExceptionIfNotSuccess("OpenProcess", processHandle != NULL);
 
-        success = CloseHandle(processHandle);
-        throwWin32ExceptionIfNotSuccess("CloseHandle", success);
-
-        return this->getFileName(filePath);
+    TCHAR filePath[MAX_PATH] {};
+    bool success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
+    if (!success) {
+        // Try to close but throwing if it does isn't a priority
+        CloseHandle(processHandle);
+        throw win32Exception("GetFileNameSuccess", GetLastError());
     }
-    throw exceptionWithLocation(ProcessNotFoundException, processId);
+
+    success = CloseHandle(processHandle);
+    throwWin32ExceptionIfNotSuccess("CloseHandle", success);
+
+    return this->getFileName(filePath);
 }
 
 std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t* filePath) const

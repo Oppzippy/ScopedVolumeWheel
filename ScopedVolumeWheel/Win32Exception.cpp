@@ -3,12 +3,14 @@
 
 Win32Exception::Win32Exception(const char* file, int line, const std::string& cause, const HRESULT errorCode)
     : ExceptionWithLocation(file, line)
+    , errorCode(errorCode)
 {
     this->createMessage(cause, errorCode);
 }
 
 Win32Exception::Win32Exception(const char* file, int line, const std::string& cause, const DWORD errorCode)
     : ExceptionWithLocation(file, line)
+    , errorCode(errorCode)
 {
     this->createMessage(cause, errorCode);
 
@@ -39,4 +41,9 @@ void Win32Exception::createMessage(const std::string& cause, const DWORD errorCo
 const char* Win32Exception::what() const noexcept
 {
     return this->message.c_str();
+}
+
+const DWORD Win32Exception::getErrorCode() const noexcept
+{
+    return this->errorCode;
 }

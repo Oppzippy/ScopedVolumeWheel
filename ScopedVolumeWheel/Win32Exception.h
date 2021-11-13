@@ -10,9 +10,11 @@ public:
     // errorCode is from GetLastError()
     Win32Exception(const char* file, int line, const std::string&, const DWORD errorCode);
     const char* what() const noexcept override;
+    const DWORD getErrorCode() const noexcept;
 
 private:
     std::string message;
+    const DWORD errorCode;
 
     void createMessage(const std::string& cause, const DWORD errorCode);
 };
