@@ -19,8 +19,8 @@ private:
 
 #define win32Exception(what, why) exceptionWithLocation(Win32Exception, what, why);
 #define throwWin32ExceptionIfError(what, errorCode) \
-    if (errorCode != S_OK)                          \
+    if ((errorCode) != S_OK)                        \
         throw win32Exception(what, errorCode);
 #define throwWin32ExceptionIfNotSuccess(what, isSuccess) \
-    if (!isSuccess)                                      \
+    if (!(isSuccess))                                    \
         throw win32Exception(what, GetLastError());

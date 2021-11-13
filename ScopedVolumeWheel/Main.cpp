@@ -28,11 +28,14 @@ int main()
         spdlog::critical("Unexpected exception: {}", e.what());
         std::string errorMessage = std::string("Unexpected exception: ") + e.what();
         std::wstring errorMessageW = std::wstring(errorMessage.begin(), errorMessage.end());
-        MessageBox(
+        const int result = MessageBox(
             NULL,
             errorMessageW.c_str(),
             L"ScopedVolumeWheel crashed!",
             MB_OK);
+        if (result == 0) {
+            spdlog::error("MessageBox failed with error code {}", GetLastError());
+        }
         return 1;
     }
 

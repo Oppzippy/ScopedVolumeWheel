@@ -16,14 +16,16 @@ SystemTrayIcon::SystemTrayIcon(HWND hWnd)
     this->iconData.uID = 0;
     this->iconData.uCallbackMessage = CALLBACK_MESSAGE_ID;
     this->iconData.hWnd = hWnd;
-    StringCchCopy(this->iconData.szTip, ARRAYSIZE(this->iconData.szTip), L"ScopedVolumeWheel");
+    const HRESULT hresult = StringCchCopy(this->iconData.szTip, ARRAYSIZE(this->iconData.szTip), L"ScopedVolumeWheel");
+    throwWin32ExceptionIfError("StringCchCopy", hresult);
 
     HANDLE icon = LoadImageW(GetModuleHandle(NULL), MAKEINTRESOURCE(MAINICON), IMAGE_ICON, 32, 32, LR_SHARED);
     throwWin32ExceptionIfNotSuccess("LoadIconW", icon);
 
     this->iconData.hIcon = static_cast<HICON>(icon);
 
-    Shell_NotifyIconW(NIM_ADD, &this->iconData);
+    const BOOL result = Shell_NotifyIconW(NIM_ADD, &this->iconData);
+    throwWin32ExceptionIfNotSuccess("Shell_NotifyIconW", result);
 
     this->contextMenu = CreatePopupMenu();
 
@@ -34,12 +36,23 @@ SystemTrayIcon::SystemTrayIcon(HWND hWnd)
 
 SystemTrayIcon::~SystemTrayIcon()
 {
-    DestroyMenu(this->musicPlayerMenu);
-    DestroyMenu(this->contextMenu);
-    Shell_NotifyIconW(NIM_DELETE, &this->iconData);
+    try {
+        BOOL result = DestroyMenu(this->musicPlayerMenu);
+        throwWin32ExceptionIfNotSuccess("DestroyMenu", result);
+        result = DestroyMenu(this->contextMenu);
+        throwWin32ExceptionIfNotSuccess("DestroyMenu", result);
+        result = Shell_NotifyIconW(NIM_DELETE, &this->iconData);
+        throwWin32ExceptionIfNotSuccess("Shell_NotifyIconW", result);
+    } catch (Win32Exception e) {
+        // spdlog::error isn't noexcept, suppress this warning
+#pragma warning(push)
+#pragma warning(disable : 26447)
+        spdlog::error(e.what());
+#pragma warning(pop)
+    }
 }
 
-void SystemTrayIcon::addExitMenuItem(UINT index) noexcept
+void SystemTrayIcon::addExitMenuItem(UINT index)
 {
     MENUITEMINFO item {};
     item.cbSize = sizeof(item);
@@ -51,12 +64,12 @@ void SystemTrayIcon::addExitMenuItem(UINT index) noexcept
     item.cch = sizeof(text) / sizeof(wchar_t) - 1;
     item.dwTypeData = text;
 
-    InsertMenuItem(this->contextMenu, index, true, &item);
+    const BOOL result = InsertMenuItem(this->contextMenu, index, true, &item);
+    throwWin32ExceptionIfNotSuccess("InsertMenuItem", result);
 }
 
-void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index) noexcept
+void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index)
 {
-
     MENUITEMINFO item {};
     item.cbSize = sizeof(item);
     item.fState = MFS_ENABLED;
@@ -67,12 +80,15 @@ void SystemTrayIcon::addMusicPlayerSelectionMenuItem(UINT index) noexcept
     item.dwTypeData = text;
 
     this->musicPlayerMenu = item.hSubMenu;
-    InsertMenuItem(this->contextMenu, index, true, &item);
+
+    const BOOL result = InsertMenuItem(this->contextMenu, index, true, &item);
+    throwWin32ExceptionIfNotSuccess("InsertMenuItem", result);
 }
 
-HMENU SystemTrayIcon::musicPlayerSelectionMenu() noexcept
+HMENU SystemTrayIcon::musicPlayerSelectionMenu()
 {
     HMENU menu = CreatePopupMenu();
+    throwWin32ExceptionIfNotSuccess("CreatePopupMenu", menu != NULL);
 
     musicPlayerItemIdStartIndex = this->nextMenuItemId;
     int i = 0;
@@ -84,11 +100,13 @@ HMENU SystemTrayIcon::musicPlayerSelectionMenu() noexcept
         item.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_STATE | MIIM_ID;
         item.wID = this->nextMenuItemId++;
 
+        // InsertMenuItem doesn't modify the text so this is safe
         LPWSTR text = const_cast<wchar_t*>(application.c_str());
         item.dwTypeData = text;
         item.cch = application.size();
 
-        InsertMenuItem(menu, i++, true, &item);
+        const BOOL result = InsertMenuItem(menu, i++, true, &item);
+        throwWin32ExceptionIfNotSuccess("InsertMenuItem", result);
     }
 
     return menu;
@@ -97,10 +115,13 @@ HMENU SystemTrayIcon::musicPlayerSelectionMenu() noexcept
 void SystemTrayIcon::showMenu()
 {
     POINT cursorPosition {};
-    GetCursorPos(&cursorPosition);
+    BOOL result = GetCursorPos(&cursorPosition);
+    throwWin32ExceptionIfNotSuccess("GetCursorPos", result);
 
-    SetForegroundWindow(this->iconData.hWnd);
-    const int result = TrackPopupMenuEx(
+    result = SetForegroundWindow(this->iconData.hWnd);
+    throwWin32ExceptionIfNotSuccess("SetForegroundWindow", result);
+
+    const UINT selectionId = TrackPopupMenuEx(
         this->contextMenu,
         TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_HORIZONTAL | TPM_RETURNCMD,
         cursorPosition.x,
@@ -108,14 +129,13 @@ void SystemTrayIcon::showMenu()
         this->iconData.hWnd,
         NULL);
 
-    if (result == this->exitMenuItemId) {
+    if (selectionId == this->exitMenuItemId) {
         PostQuitMessage(0);
     } else if (
-        const UINT unsignedResult = static_cast<UINT>(result);
-        static_cast<UINT>(result) >= this->musicPlayerItemIdStartIndex
-        && static_cast<UINT>(result) < this->musicPlayerItemIdStartIndex + this->musicApplications.size()) {
+        selectionId >= this->musicPlayerItemIdStartIndex
+        && selectionId < this->musicPlayerItemIdStartIndex + this->musicApplications.size()) {
 
-        this->selectedMusicPlayer = this->musicApplications[static_cast<UINT>(result) - this->musicPlayerItemIdStartIndex];
+        this->selectedMusicPlayer = this->musicApplications[static_cast<UINT>(selectionId) - this->musicPlayerItemIdStartIndex];
 
         this->updateMusicPlayerMenu();
 
@@ -127,7 +147,7 @@ void SystemTrayIcon::showMenu()
     }
 }
 
-void SystemTrayIcon::updateMusicPlayerMenu() noexcept
+void SystemTrayIcon::updateMusicPlayerMenu()
 {
     for (UINT i = 0; i < this->musicApplications.size(); i++) {
         const UINT itemId = i + this->musicPlayerItemIdStartIndex;
@@ -136,7 +156,8 @@ void SystemTrayIcon::updateMusicPlayerMenu() noexcept
         item.fState = this->musicApplications[i] == this->selectedMusicPlayer ? MFS_CHECKED : MFS_UNCHECKED;
         item.fMask = MIIM_STATE;
 
-        SetMenuItemInfo(this->musicPlayerMenu, itemId, false, &item);
+        const BOOL result = SetMenuItemInfo(this->musicPlayerMenu, itemId, false, &item);
+        throwWin32ExceptionIfNotSuccess("SetMenuItemInfo", result);
     }
 }
 

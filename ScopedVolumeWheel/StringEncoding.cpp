@@ -12,6 +12,7 @@ std::string StringEncoding::fromWideChar(const wchar_t* str)
 {
     const int bytesNeeded = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
     std::vector<char> buffer(bytesNeeded);
+    // TODO handle errors
     WideCharToMultiByte(CP_UTF8, 0, str, -1, buffer.data(), bytesNeeded, NULL, NULL);
 
     return std::string(buffer.data());
@@ -26,6 +27,7 @@ std::wstring StringEncoding::toWideChar(const char* str)
 {
     const int bytesNeeded = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
     std::vector<wchar_t> buffer(bytesNeeded);
+    // TODO handle errors
     MultiByteToWideChar(CP_UTF8, 0, str, -1, buffer.data(), bytesNeeded);
 
     return std::wstring(buffer.data());

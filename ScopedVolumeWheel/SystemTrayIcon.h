@@ -10,7 +10,7 @@ public:
     SystemTrayIcon(HWND hwnd);
     ~SystemTrayIcon();
     void showMenu();
-    void updateMusicPlayerMenu() noexcept;
+    void updateMusicPlayerMenu();
     void setSelectedMusicPlayer(const std::wstring& applicationName);
     void setMusicPlayerChangeHandler(std::function<void(const std::wstring& applicationName)> handler);
 
@@ -36,7 +36,7 @@ private:
 
     std::function<void(const std::wstring& applicationName)> musicPlayerChangeHandler;
 
-    void addExitMenuItem(UINT index) noexcept;
-    void addMusicPlayerSelectionMenuItem(UINT index) noexcept;
-    HMENU musicPlayerSelectionMenu() noexcept;
+    void addExitMenuItem(UINT index);
+    void addMusicPlayerSelectionMenuItem(UINT index);
+    HMENU musicPlayerSelectionMenu();
 };

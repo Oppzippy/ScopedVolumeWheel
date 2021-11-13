@@ -9,6 +9,8 @@ const LPCWSTR WINDOW_CLASS_NAME = L"optionsWindow";
 OptionsWindow::OptionsWindow()
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
+    throwWin32ExceptionIfNotSuccess("GetModuleHandle", hInstance != NULL);
+
     WNDCLASSEXW wc { 0 };
     wc.cbSize = sizeof(WNDCLASSEXW);
     wc.lpfnWndProc = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
@@ -25,10 +27,10 @@ OptionsWindow::OptionsWindow()
     };
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    const ATOM atom = RegisterClassExW(&wc);
-    throwWin32ExceptionIfNotSuccess("RegisterClassExW", atom != 0);
+    const ATOM atom = RegisterClassEx(&wc);
+    throwWin32ExceptionIfNotSuccess("RegisterClassEx", atom != 0);
 
-    this->hWnd = CreateWindowExW(
+    this->hWnd = CreateWindowEx(
         WS_EX_OVERLAPPEDWINDOW,
         WINDOW_CLASS_NAME,
         L"no title",
@@ -39,8 +41,15 @@ OptionsWindow::OptionsWindow()
         NULL,
         hInstance,
         NULL);
+    throwWin32ExceptionIfNotSuccess("CreateWindowEx", this->hWnd);
+
+    SetLastError(0);
     SetWindowLongPtr(this->hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-    this->systemTrayIcon = std::make_unique<SystemTrayIcon>(this->hWnd);
+    const DWORD error = GetLastError();
+    throwWin32ExceptionIfNotSuccess("SetWindowLongPtr", error == 0);
+
+    this->systemTrayIcon
+        = std::make_unique<SystemTrayIcon>(this->hWnd);
 }
 
 OptionsWindow::~OptionsWindow()

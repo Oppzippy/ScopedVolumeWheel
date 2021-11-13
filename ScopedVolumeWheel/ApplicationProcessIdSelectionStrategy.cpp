@@ -1,4 +1,5 @@
 #include "ApplicationProcessIdSelectionStrategy.h"
+#include "ProcessNotFoundException.h"
 #include "Win32Exception.h"
 #include <Psapi.h>
 #include <optional>
@@ -65,8 +66,7 @@ std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD p
 
         return this->getFileName(filePath);
     }
-    // TODO throw?
-    return std::wstring();
+    throw exceptionWithLocation(ProcessNotFoundException, processId);
 }
 
 std::wstring ApplicationProcessIdSelectionStrategy::getFileName(const wchar_t* filePath) const
