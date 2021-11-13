@@ -17,16 +17,17 @@ DWORD ApplicationProcessIdSelectionStrategy::processId() const
     throwWin32ExceptionIfNotSuccess("EnumProcesses", success);
 
     for (DWORD i = 0; i < bytesNeeded / sizeof(DWORD); i++) {
+        const DWORD processId = processIds[i];
+        if (processId == 0) {
+            continue;
+        }
         try {
-            const DWORD processId = processIds[i];
-            std::wstring fileName = this->getFileNameOfProcess(processId);
+            std::optional<std::wstring> fileName = this->getFileNameOfProcess(processId);
             if (fileName == this->applicationName) {
                 return processId;
             }
         } catch (const Win32Exception& e) {
-            if (e.getErrorCode() != ERROR_INVALID_PARAMETER && e.getErrorCode() != ERROR_ACCESS_DENIED) {
-                throw e;
-            }
+            throw e;
         }
     }
 
@@ -38,9 +39,14 @@ void ApplicationProcessIdSelectionStrategy::setApplicationName(const std::wstrin
     this->applicationName = applicationName;
 }
 
-std::wstring ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
+std::optional<std::wstring> ApplicationProcessIdSelectionStrategy::getFileNameOfProcess(DWORD processId) const
 {
     HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
+    if (processHandle == NULL) {
+        if (GetLastError() == ERROR_INVALID_PARAMETER || GetLastError() == ERROR_ACCESS_DENIED) {
+            return std::nullopt;
+        }
+    }
     throwWin32ExceptionIfNotSuccess("OpenProcess", processHandle != NULL);
 
     TCHAR filePath[MAX_PATH] {};

@@ -1,5 +1,6 @@
 #pragma once
 #include "ProcessIdSelectionStrategy.h"
+#include <optional>
 #include <string>
 
 class ApplicationProcessIdSelectionStrategy : public ProcessIdSelectionStrategy {
@@ -10,6 +11,6 @@ public:
 
 private:
     std::wstring applicationName;
-    std::wstring getFileNameOfProcess(DWORD processId) const;
+    std::optional<std::wstring> getFileNameOfProcess(DWORD processId) const;
     std::wstring getFileName(const wchar_t* filePath) const;
 };
