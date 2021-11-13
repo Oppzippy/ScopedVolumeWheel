@@ -24,7 +24,7 @@ int main()
         application.run();
 
         CoUninitialize();
-    } catch (std::exception e) {
+    } catch (const std::exception& e) {
         spdlog::critical("Unexpected exception: {}", e.what());
         std::string errorMessage = std::string("Unexpected exception: ") + e.what();
         std::wstring errorMessageW = std::wstring(errorMessage.begin(), errorMessage.end());

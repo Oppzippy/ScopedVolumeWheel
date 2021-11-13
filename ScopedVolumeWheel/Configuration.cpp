@@ -31,7 +31,7 @@ void Configuration::read()
     try {
         auto configToml = toml::parse_file(this->filePath);
         this->musicPlayer = StringEncoding::toWideChar(configToml["musicPlayer"].value_or("Spotify.exe"));
-    } catch (toml::parse_error e) {
+    } catch (const toml::parse_error& e) {
         // XXX see if there's an error code or some alternative to using the raw error message
         if (e.description() != "File could not be opened for reading") {
             // TODO log toml::parse_error::source

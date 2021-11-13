@@ -21,7 +21,7 @@ void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
         try {
             const float newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
             this->volumeDisplay.show(newVolume);
-        } catch (ProcessNotFoundException ex) {
+        } catch (const ProcessNotFoundException& ex) {
             spdlog::debug("Process not found when searching volume mixer sessions: {}", ex.what());
         }
     }

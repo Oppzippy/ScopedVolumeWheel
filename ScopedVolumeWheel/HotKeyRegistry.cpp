@@ -11,7 +11,7 @@ HotKeyRegistry::~HotKeyRegistry()
             const BOOL result = UnregisterHotKey(NULL, kv.first);
             throwWin32ExceptionIfNotSuccess("UnregisterHotKey", result);
         }
-    } catch (Win32Exception e) {
+    } catch (const Win32Exception& e) {
         // spdlog::error isn't noexcept, suppress this warning
 #pragma warning(push)
 #pragma warning(disable : 26447)
@@ -35,7 +35,7 @@ void HotKeyRegistry::handle(const MSG& msg)
         const HotKey& hotKey = this->idsToHotKeys.at(msg.wParam);
         const std::unique_ptr<HotKeyHandler>& handler = this->handlers.at(hotKey);
         handler->handle(hotKey);
-    } catch (std::out_of_range e) {
+    } catch (const std::out_of_range& e) {
         throw exceptionWithLocation(ExceptionWithLocation, e.what());
     }
 }

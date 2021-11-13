@@ -43,7 +43,7 @@ SystemTrayIcon::~SystemTrayIcon()
         throwWin32ExceptionIfNotSuccess("DestroyMenu", result);
         result = Shell_NotifyIconW(NIM_DELETE, &this->iconData);
         throwWin32ExceptionIfNotSuccess("Shell_NotifyIconW", result);
-    } catch (Win32Exception e) {
+    } catch (const Win32Exception& e) {
         // spdlog::error isn't noexcept, suppress this warning
 #pragma warning(push)
 #pragma warning(disable : 26447)
