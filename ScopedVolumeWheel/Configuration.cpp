@@ -2,6 +2,7 @@
 #include "ApplicationPaths.h"
 #include "StringEncoding.h"
 #include "Win32Exception.h"
+#include "spdlog/spdlog.h"
 #include "toml++/toml.h"
 #include <PathCch.h>
 #include <ShlObj.h>
@@ -31,10 +32,11 @@ void Configuration::read()
         auto configToml = toml::parse_file(this->filePath);
         this->musicPlayer = StringEncoding::toWideChar(configToml["musicPlayer"].value_or("Spotify.exe"));
     } catch (toml::parse_error e) {
-        // TODO see if there's an error code or something to use instead
+        // XXX see if there's an error code or some alternative to using the raw error message
         if (e.description() != "File could not be opened for reading") {
-            // TODO wrap in exception that includes file name and line
-            throw e;
+            // TODO log toml::parse_error::source
+            spdlog::critical("Failed to load configuration file: {}", e.description());
+            throw exceptionWithLocation(ExceptionWithLocation, e.what());
         }
     }
 }

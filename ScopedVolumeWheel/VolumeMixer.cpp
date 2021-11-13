@@ -1,4 +1,5 @@
 #include "VolumeMixer.h"
+#include "ProcessNotFoundException.h"
 #include "Win32Exception.h"
 
 #define AUDCLNT_S_NO_SINGLE_PROCESS AUDCLNT_SUCCESS(0x00d)
@@ -6,14 +7,19 @@
 float VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
+    size_t numberOfSessions = sessions.size();
+    if (numberOfSessions == 0) {
+        throw exceptionWithLocation(ProcessNotFoundException, processId);
+    }
 
-    float level = NAN;
-    for (CComPtr<IAudioSessionControl2> session : sessions) {
+    float level = 0;
+    for (int i = 0; i < sessions.size(); i++) {
+        CComPtr<IAudioSessionControl2> session = sessions[i];
         CComPtr<ISimpleAudioVolume> volume;
         HRESULT result = session->QueryInterface(&volume);
         throwWin32ExceptionIfError("IAudioSessionControl2::QueryInterface", result);
 
-        if (isnan(level)) {
+        if (i == 0) {
             // If more than one session exists for the same process, we'll set them all
             // to the same volume rather than adjusting them individually
             result = volume->GetMasterVolume(&level);

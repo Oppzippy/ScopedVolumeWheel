@@ -13,6 +13,11 @@
 #include <memory>
 #include <stdexcept>
 
+void SpdlogGlobalConfiguration::configureDebug()
+{
+    spdlog::set_level(spdlog::level::debug);
+}
+
 void SpdlogGlobalConfiguration::configure()
 {
     auto consoleSink = std::make_shared<spdlog::sinks::stderr_color_sink_st>();
@@ -26,6 +31,7 @@ void SpdlogGlobalConfiguration::configure()
     logger->flush_on(spdlog::level::err);
 
     spdlog::set_default_logger(logger);
+    spdlog::set_level(spdlog::level::info);
 }
 
 std::wstring SpdlogGlobalConfiguration::logPath()

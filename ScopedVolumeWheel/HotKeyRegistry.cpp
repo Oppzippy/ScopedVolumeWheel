@@ -1,4 +1,5 @@
 #include "HotKeyRegistry.h"
+#include "ExceptionWithLocation.h"
 #include <stdexcept>
 
 HotKeyRegistry::~HotKeyRegistry()
@@ -23,7 +24,6 @@ void HotKeyRegistry::handle(const MSG& msg)
         std::unique_ptr<HotKeyHandler>& handler = this->handlers.at(hotKey);
         handler->handle(hotKey);
     } catch (std::out_of_range e) {
-        // TODO throw a custom exception
-        throw e;
+        throw exceptionWithLocation(ExceptionWithLocation, e.what());
     }
 }

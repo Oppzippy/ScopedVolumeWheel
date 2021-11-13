@@ -1,4 +1,6 @@
 #include "VolumeAdjustmentHotKeyHandler.h"
+#include "ProcessNotFoundException.h"
+#include "spdlog/spdlog.h"
 
 VolumeAdjustmentHotKeyHandler::VolumeAdjustmentHotKeyHandler(
     VolumeMixer& volumeMixer,
@@ -16,10 +18,11 @@ void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
 {
     DWORD processId = this->processIdSelectionStrategy.processId();
     if (processId != 0) {
-        float newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
-        // TODO use exception instead of NAN
-        if (!isnan(newVolume)) {
+        try {
+            float newVolume = volumeMixer.adjustVolumeOfProcess(processId, this->adjustment);
             this->volumeDisplay.show(newVolume);
+        } catch (ProcessNotFoundException ex) {
+            spdlog::debug("Process not found when searching volume mixer sessions: {}", ex.what());
         }
     }
 }

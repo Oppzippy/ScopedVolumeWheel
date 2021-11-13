@@ -5,6 +5,7 @@
 
 class SpdlogGlobalConfiguration {
 public:
+    static void configureDebug();
     static void configure();
 
 private:

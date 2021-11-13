@@ -10,6 +10,9 @@ int main()
 {
     try {
         SpdlogGlobalConfiguration::configure();
+#ifdef DEBUG
+        SpdlogGlobalConfiguration::configureDebug();
+#endif
 
         HRESULT result = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
         if (result != S_OK) {
