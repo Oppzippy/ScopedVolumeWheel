@@ -79,6 +79,7 @@ jobs:
         uses: ./.github/actions/changelog
         with:
           output-file: CHANGELOG.md
+          include-regex: "^(feat|fix|perf|docs)"
 
       - name: Download x86 executable
         uses: actions/download-artifact@v2
