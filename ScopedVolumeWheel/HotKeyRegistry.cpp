@@ -1,7 +1,7 @@
 #include "HotKeyRegistry.h"
 #include "ExceptionWithLocation.h"
 #include "Win32Exception.h"
-#include "spdlog/spdlog.h";
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 
 HotKeyRegistry::~HotKeyRegistry()

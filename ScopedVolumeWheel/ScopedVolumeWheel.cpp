@@ -4,10 +4,10 @@
 #include "FocusedWindowProcessIdSelectionStrategy.h"
 #include "VolumeAdjustmentHotKeyHandler.h"
 #include "Win32Exception.h"
-#include "spdlog/spdlog.h"
 #include <PathCch.h>
 #include <Windows.h>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 
 ScopedVolumeWheel::ScopedVolumeWheel()

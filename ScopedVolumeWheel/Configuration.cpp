@@ -2,12 +2,12 @@
 #include "ApplicationPaths.h"
 #include "StringEncoding.h"
 #include "Win32Exception.h"
-#include "spdlog/spdlog.h"
-#include "toml++/toml.h"
 #include <PathCch.h>
 #include <ShlObj.h>
 #include <fstream>
 #include <iostream>
+#include <spdlog/spdlog.h>
+#include <toml++/toml.h>
 
 Configuration::Configuration(const std::wstring& filePath)
 {

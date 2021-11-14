@@ -1,11 +1,11 @@
 #include "SystemTrayIcon.h"
 #include "Win32Exception.h"
 #include "resource.h"
-#include "spdlog/spdlog.h"
 #include <CommCtrl.h>
 #include <WinUser.h>
 #include <Windows.h>
 #include <shellapi.h>
+#include <spdlog/spdlog.h>
 #include <strsafe.h>
 #include <vector>
 

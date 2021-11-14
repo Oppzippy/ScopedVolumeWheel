@@ -1,9 +1,9 @@
 #include "ScopedVolumeWheel.h"
 #include "SpdlogGlobalConfiguration.h"
-#include "spdlog/spdlog.h"
 #include <WinUser.h>
 #include <Windows.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 
 int main()

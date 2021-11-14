@@ -1,5 +1,5 @@
 #include "VolumeAdjustmentHotKeyHandler.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 VolumeAdjustmentHotKeyHandler::VolumeAdjustmentHotKeyHandler(
     VolumeMixer& volumeMixer,
