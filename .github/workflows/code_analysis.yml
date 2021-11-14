@@ -1,0 +1,17 @@
+name: Code Analysis
+
+on: push
+
+jobs:
+  code_analysis:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          vs-prerelease: true
+      - name: Run Microsoft C++ Code Analysis
+        run: msbuild -p:RunCodeAnalysis=true
