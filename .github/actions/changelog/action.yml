@@ -1,0 +1,23 @@
+name: "Generate Changelog"
+description: Generates a list of commits since the last tag with messages matching a regular expression.
+inputs:
+  include-regex:
+    description: Only commits matching this regular expression will be included in the changelog.
+    required: true
+    default: "^(feat|fix)"
+  output-file:
+    description: The changelog will be written to this file.
+    required: true
+    default: "CHANGELOG.md"
+runs:
+  using: "composite"
+  steps:
+    - id: generate
+      shell: bash
+      run: |
+        git log \
+        $(git describe --always --abbrev=0 --tags $(git describe --abbrev=0 --tags --always)^)..HEAD \
+        --oneline --pretty="%s (%H)" | \
+        grep -E "${{ inputs.include-regex }}" | \
+        sort | \
+        sed "s/^/- /g" > "${{ inputs.output-file }}"
