@@ -41,6 +41,9 @@ Section
 	CreateShortCut "$SMPROGRAMS\ScopedVolumeWheel\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\ScopedVolumeWheel\ScopedVolumeWheel.lnk" "$INSTDIR\ScopedVolumeWheel.exe"
 
+	; Run at startup
+	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "ScopedVolumeWheel" "$INSTDIR\ScopedVolumeWheel.exe"
+
 	; Registry uninstall information
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ScopedVolumeWheel" "DisplayName" "ScopedVolumeWheel (remove only)"
 	WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ScopedVolumeWheel" "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -55,6 +58,8 @@ Section "Uninstall"
 
 	RMDir /r "$INSTDIR"
 	RMDir /r "$APPDATA\ScopedVolumeWheel"
+
+	DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "ScopedVolumeWheel"
 
 	DeleteRegKey HKCU "Software\ScopedVolumeWheel"
 	DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ScopedVolumeWheel"
