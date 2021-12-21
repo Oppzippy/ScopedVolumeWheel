@@ -50,6 +50,7 @@ Section
 
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
+	Exec "$INSTDIR\ScopedVolumeWheel.exe"
 SectionEnd
 
 Section "Uninstall"
