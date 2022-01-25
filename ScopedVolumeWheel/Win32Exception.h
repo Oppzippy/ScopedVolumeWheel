@@ -4,7 +4,7 @@
 #include <exception>
 #include <string>
 
-class Win32Exception : public ExceptionWithLocation {
+class Win32Exception : public ExceptionWithLocation, public std::exception {
 public:
     Win32Exception(const char* file, int line, const std::string& cause, const HRESULT errorCode);
     // errorCode is from GetLastError()
