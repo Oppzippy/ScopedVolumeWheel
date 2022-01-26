@@ -6,7 +6,13 @@
 
 std::optional<float> VolumeMixer::adjustVolumeOfProcess(DWORD processId, float adjustment)
 {
-    std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcess(processId);
+    std::set<DWORD> processIds { processId };
+    return this->adjustVolumeOfProcesses(processIds, adjustment);
+}
+
+std::optional<float> VolumeMixer::adjustVolumeOfProcesses(const std::set<DWORD>& processIds, float adjustment)
+{
+    std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControlsForProcesses(processIds);
     const size_t numberOfSessions = sessions.size();
     if (numberOfSessions == 0) {
         return std::nullopt;
@@ -39,16 +45,16 @@ std::optional<float> VolumeMixer::adjustVolumeOfProcess(DWORD processId, float a
     return level;
 }
 
-std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControlsForProcess(DWORD processId)
+std::vector<CComPtr<IAudioSessionControl2>> VolumeMixer::getAudioSessionControlsForProcesses(const std::set<DWORD>& processIds)
 {
     std::vector<CComPtr<IAudioSessionControl2>> sessions = this->getAudioSessionControls();
-    auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processId](CComPtr<IAudioSessionControl2> session) {
+    auto thingsToRemove = std::remove_if(sessions.begin(), sessions.end(), [processIds](CComPtr<IAudioSessionControl2> session) {
         DWORD pId = 0;
         const HRESULT result = session->GetProcessId(&pId);
         if (result != AUDCLNT_S_NO_SINGLE_PROCESS) {
             throwWin32ExceptionIfError("IAudioSessionControl2::GetProcessId", result);
         }
-        return pId != processId;
+        return !processIds.contains(pId);
     });
     sessions.erase(thingsToRemove, sessions.end());
     return sessions;

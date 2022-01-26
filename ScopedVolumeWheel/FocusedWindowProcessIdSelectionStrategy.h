@@ -1,7 +1,11 @@
 #pragma once
+#include "ApplicationProcessIdSelectionStrategy.h"
 #include "ProcessIdSelectionStrategy.h"
 
 class FocusedWindowProcessIdSelectionStrategy : public ProcessIdSelectionStrategy {
 public:
-    DWORD processId() noexcept override;
+    std::optional<ProcessSelection> processId() override;
+
+private:
+    ApplicationProcessIdSelectionStrategy fallbackStrategy;
 };
