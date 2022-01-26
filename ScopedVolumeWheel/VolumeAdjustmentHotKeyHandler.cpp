@@ -20,7 +20,7 @@ void VolumeAdjustmentHotKeyHandler::handle(const HotKey& hotKey)
         const ProcessSelection& processSelection = optionalProcessSelection.value();
         std::optional<float> newVolume;
         if (processSelection.preferredProcess != 0) {
-            this->volumeMixer.adjustVolumeOfProcess(processSelection.preferredProcess, this->adjustment);
+            newVolume = this->volumeMixer.adjustVolumeOfProcess(processSelection.preferredProcess, this->adjustment);
         }
         if (!newVolume.has_value()) {
             newVolume = this->volumeMixer.adjustVolumeOfProcesses(processSelection.fallbackProcesses, this->adjustment);
