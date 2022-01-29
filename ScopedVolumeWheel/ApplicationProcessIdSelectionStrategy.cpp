@@ -32,7 +32,7 @@ std::optional<ProcessSelection> ApplicationProcessIdSelectionStrategy::processId
         }
         try {
             std::optional<std::wstring> fileName = this->getFileNameOfProcess(processId);
-            if (fileName == this->applicationName) {
+            if (fileName.has_value() && fileName.value() == this->applicationName) {
                 filteredProcessIds.insert(processId);
             }
         } catch (const Win32Exception& e) {
@@ -87,8 +87,16 @@ std::optional<std::wstring> ApplicationProcessIdSelectionStrategy::getFileNameOf
     bool success = GetModuleFileNameEx(processHandle, NULL, filePath, MAX_PATH) != 0;
     if (!success) {
         // Try to close but throwing if it does isn't a priority
-        CloseHandle(processHandle);
-        throw win32Exception("GetModuleFileNameEx", GetLastError());
+        const DWORD lastError = GetLastError();
+        switch (lastError) {
+        case ERROR_ACCESS_DENIED:
+            success = CloseHandle(processHandle);
+            throwWin32ExceptionIfNotSuccess("CloseHandle", success);
+            return std::nullopt;
+        default:
+            CloseHandle(processHandle);
+            throw win32Exception("GetModuleFileNameEx", GetLastError());
+        }
     }
 
     success = CloseHandle(processHandle);
