@@ -88,7 +88,7 @@ std::optional<std::wstring> ApplicationProcessIdSelectionStrategy::getFileNameOf
     if (!success) {
         // Try to close but throwing if it does isn't a priority
         CloseHandle(processHandle);
-        throw win32Exception("GetFileNameSuccess", GetLastError());
+        throw win32Exception("GetModuleFileNameEx", GetLastError());
     }
 
     success = CloseHandle(processHandle);
