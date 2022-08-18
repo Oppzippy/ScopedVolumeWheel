@@ -8,7 +8,7 @@
 
 DWORD mainThreadId;
 
-BOOL consoleCtrlHandler(DWORD dwCtrlType)
+BOOL WINAPI consoleCtrlHandler(DWORD dwCtrlType)
 {
     switch (dwCtrlType) {
     case CTRL_C_EVENT:
