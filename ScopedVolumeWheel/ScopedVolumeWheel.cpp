@@ -56,10 +56,9 @@ void ScopedVolumeWheel::run()
             case WM_HOTKEY:
                 this->registry->handle(msg);
                 break;
+            case WM_QUIT:
+                return;
             }
-        }
-        if (msg.message == WM_QUIT) {
-            break;
         }
         this->display->tick();
         Sleep(16);
