@@ -6,8 +6,27 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
+DWORD mainThreadId;
+
+BOOL consoleCtrlHandler(DWORD dwCtrlType)
+{
+    switch (dwCtrlType) {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+        const BOOL success = PostThreadMessage(mainThreadId, WM_QUIT, 0, 0);
+        if (success == 0) {
+            spdlog::critical("PostThreadMessage failed to send WM_QUIT to main thread with error code {}: ", GetLastError());
+        }
+        return true;
+    }
+    return false;
+}
+
 int main()
 {
+    mainThreadId = GetCurrentThreadId();
+    SetConsoleCtrlHandler(consoleCtrlHandler, TRUE);
+
     try {
         SpdlogGlobalConfiguration::configure();
 #ifdef DEBUG

@@ -51,7 +51,7 @@ void ScopedVolumeWheel::run()
 {
     MSG msg {};
     while (true) {
-        while (PeekMessage(&msg, NULL, WM_HOTKEY, WM_HOTKEY, true) != 0) {
+        while (PeekMessage(&msg, NULL, WM_QUIT, WM_HOTKEY, true) != 0) {
             switch (msg.message) {
             case WM_HOTKEY:
                 this->registry->handle(msg);
