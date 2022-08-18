@@ -2,6 +2,7 @@
 #include "Win32Exception.h"
 #include <Psapi.h>
 #include <optional>
+#include <spdlog/spdlog.h>
 
 ApplicationProcessIdSelectionStrategy::ApplicationProcessIdSelectionStrategy()
 {
@@ -36,7 +37,7 @@ std::optional<ProcessSelection> ApplicationProcessIdSelectionStrategy::processId
                 filteredProcessIds.insert(processId);
             }
         } catch (const Win32Exception& e) {
-            throw e;
+            spdlog::warn(e.what());
         }
     }
 
