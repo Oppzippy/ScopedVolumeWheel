@@ -95,7 +95,7 @@ std::optional<std::wstring> ApplicationProcessIdSelectionStrategy::getFileNameOf
             return std::nullopt;
         default:
             CloseHandle(processHandle);
-            throw win32Exception("GetModuleFileNameEx", GetLastError());
+            throw win32Exception("GetModuleFileNameEx", lastError);
         }
     }
 
